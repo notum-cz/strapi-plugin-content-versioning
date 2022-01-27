@@ -1,0 +1,15 @@
+{
+  "components.Edit.versions": "Verze",
+  "components.Edit.versionSelectPlaceholder": "Vyberte verzi",
+  "containers.Edit.currentShowedVersion": "Zobrazená verze",
+  "containers.Edit.currentPublishedVersion": "Zveřejněná verze",
+  "containers.Edit.buttonPreview": "Náhled",
+  "containers.Edit.buttonSave": "Uložit jako novou verzi",
+  "CheckboxConfirmation.Modal.body": "Přejete si jej deaktivovat?",
+  "CheckboxConfirmation.Modal.button-confirm": "Ano, deaktivovat",
+  "CheckboxConfirmation.Modal.content": "Deaktovováním verzování odstraníte všechny verze obsahu vyjma nejaktuálnějších verzí.",
+  "plugin.schema.versions.versioned.description": "Umožňuje udržovat starší verze obsahu",
+  "plugin.schema.versions.versioned.description-content-type": "Umožňuje udržovat starší verze obsahu",
+  "plugin.schema.versions.versioned.label": "Aktivovat verzování pro tento typ obsahu",
+  "plugin.schema.versions.versioned.label-content-type": "Aktivovat verzování pro tento typ obsahu"
+}

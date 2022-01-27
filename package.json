@@ -1,0 +1,29 @@
+{
+  "name": "@notum-cz/strapi-plugin-versions",
+  "version": "0.1.1",
+  "description": "This plugin enables content versioning",
+  "license": "MIT",
+  "author": "Notum Technologies s.r.o. <info@notum.cz> (https://notum.cz/en/strapi)",
+  "maintainers": [
+    "Notum Technologies s.r.o. <info@notum.cz> (https://notum.cz/en/strapi)",
+    "Martin Čapek <martin.capek@notum.cz> (https://notum.cz/en/strapi)"
+  ],
+  "dependencies": {
+    "@strapi/utils": "4.0.0",
+    "lodash": "4.17.21"
+  },
+  "peerDependencies": {
+    "@strapi/strapi": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=12.x.x <=16.x.x",
+    "npm": ">=6.0.0"
+  },
+  "strapi": {
+    "displayName": "Strapi plugin versions",
+    "name": "versions",
+    "description": "This plugin enables content versioning",
+    "required": false,
+    "kind": "plugin"
+  }
+}
