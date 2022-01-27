@@ -110,3 +110,7 @@ index aff6f07..c5d7b87 100644
 
 ## Know limitation
 - Not working with UID and unique fields
+
+
+## Bugs
+We are using GitHub Issues to manage our public bugs. We keep a close eye on this so before filing a new issue, try to make sure the problem does not already exist.
