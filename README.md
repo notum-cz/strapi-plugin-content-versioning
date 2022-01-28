@@ -4,6 +4,14 @@ This plugin enables versioning of Content Type in Strapi. Also it enables to sel
 
 Versioning can be enabled in settings of Content Type. Same as localziation plugin.
 
+## Installation
+
+Simply run `npm i @notum-cz/strapi-plugin-versions` or `yarn add @notum-cz/strapi-plugin-versions`
+
+
+
+## Overriding `save` button (not necessary but recommended)
+
 You have to use [patch-package](https://www.npmjs.com/package/patch-package) to make it work with native Save button. (We are working closely to change this with Strapi team).
 
 1. Install `patch-package`
@@ -107,6 +115,11 @@ index aff6f07..c5d7b87 100644
              <form noValidate onSubmit={handleSubmit}>
 ```
 
+## Will be added
+ - [] history for single types
+ - [] remove patch-package problem
+ - [] autosave
+ - [] update current version (without creating new one)
 
 ## Know limitation
 - Not working with UID and unique fields
