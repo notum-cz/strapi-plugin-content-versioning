@@ -11,7 +11,7 @@ module.exports = [
         {
           name: "admin::hasPermissions",
           config: {
-            actions: ["plugin::versions.save"],
+            actions: ["plugin::content-versioning.save"],
           },
         },
       ],

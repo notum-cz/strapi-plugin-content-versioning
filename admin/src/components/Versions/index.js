@@ -104,7 +104,7 @@ const Versions = () => {
     } = modifiedData;
 
     try {
-      const result = await request(`/versions/${slug}/save`, {
+      const result = await request(`/content-versions/${slug}/save`, {
         method: "POST",
         body: newData,
       });

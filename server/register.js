@@ -32,7 +32,7 @@ const extendVersionedContentTypes = (strapi) => {
     if (contentTypeService.isVersionedContentType(contentType)) {
       const { attributes } = contentType;
 
-      _.set(attributes, "versions", {
+      _.set(attributes, "contentVersioning", {
         writable: true,
         private: false,
         configurable: false,
