@@ -1,5 +1,5 @@
 {
-  "name": "@notum-cz/strapi-plugin-versions",
+  "name": "@notum-cz/strapi-plugin-content-versioning",
   "version": "0.1.2",
   "description": "This plugin enables content versioning",
   "license": "SEE LICENSE IN LICENSE",
@@ -20,8 +20,8 @@
     "npm": ">=6.0.0"
   },
   "strapi": {
-    "displayName": "Strapi plugin versions",
-    "name": "versions",
+    "displayName": "Strapi plugin content versioning",
+    "name": "content-versioning",
     "description": "This plugin enables content versioning",
     "required": false,
     "kind": "plugin"
@@ -33,7 +33,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/notum-cz/strapi-plugin-versions.git"
+    "url": "git+https://github.com/notum-cz/strapi-plugin-content-versioning.git"
   },
   "keywords": [
     "strapi",
@@ -41,7 +41,7 @@
     "version"
   ],
   "bugs": {
-    "url": "https://github.com/notum-cz/strapi-plugin-versions/issues"
+    "url": "https://github.com/notum-cz/strapi-plugin-content-versioning/issues"
   },
-  "homepage": "https://github.com/notum-cz/strapi-plugin-versions#readme"
+  "homepage": "https://github.com/notum-cz/strapi-plugin-content-versioning#readme"
 }

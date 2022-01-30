@@ -6,7 +6,7 @@ Versioning can be enabled in settings of Content Type. Same as localziation plug
 
 ## Installation
 
-Simply run `npm i @notum-cz/strapi-plugin-versions` or `yarn add @notum-cz/strapi-plugin-versions`
+Simply run `npm i @notum-cz/strapi-plugin-content-versioning` or `yarn add @notum-cz/strapi-plugin-content-versioning`
 
 
 
@@ -39,7 +39,7 @@ index 6701309..393f616 100644
    const onPost = useCallback(
      async (body, trackerProperty) => {
 -      const endPoint = `${getRequestUrl(`collection-types/${slug}`)}${rawQuery}`;
-+      const endPoint = hasVersions ?  `/versions/${slug}/save` : `${getRequestUrl(`collection-types/${slug}`)}${rawQuery}`;
++      const endPoint = hasVersions ?  `/content-versioning/${slug}/save` : `${getRequestUrl(`collection-types/${slug}`)}${rawQuery}`;
 
        try {
          // Show a loading button in the EditView/Header.js && lock the app => no navigation
@@ -64,7 +64,7 @@ index 6701309..393f616 100644
      async (body, trackerProperty) => {
 -      const endPoint = getRequestUrl(`collection-types/${slug}/${id}`);
 +
-+      const endPoint = hasVersions ?  `/versions/${slug}/save` : getRequestUrl(`collection-types/${slug}/${id}`);
++      const endPoint = hasVersions ?  `/content-versioning/${slug}/save` : getRequestUrl(`collection-types/${slug}/${id}`);
 
        try {
          trackUsageRef.current('willEditEntry', trackerProperty);
