@@ -1,23 +1,38 @@
-# Strapi Version Plugin
+# Strapi Plugin-Content-Versioning
 
-This plugin enables versioning of Content Type in Strapi. Also it enables to select published version, so you can have multiple draft version.
+This plugin enables you to version Content Type in Strapi v4! 🎉🎉🎉
 
-Versioning can be enabled in settings of Content Type. Same as localziation plugin.
+It enables to select published version, so you can have multiple draft versions. 📜
 
-## Installation
+# Instalation
 
-Simply run `npm i @notum-cz/strapi-plugin-content-versioning` or `yarn add @notum-cz/strapi-plugin-content-versioning`
+Run `npm i @notum-cz/strapi-plugin-content-versioning`
+or use `yarn add @notum-cz/strapi-plugin-content-versioning`
 
+# Important, read before instalation
 
+1. Versioning can be **enabled in settings of Content Type**. _Same as localziation plugin._
+2. You need to have **enabled draft/publish** system on your content type.
+3. You need to create/modify file `config/plugins.js` with
 
-## Overriding `save` button (not necessary but recommended)
+```
+module.exports = ({ env }) => ({
+	"content-versioning": {
+		enabled:  true,
+	},
+});
+```
 
-You have to use [patch-package](https://www.npmjs.com/package/patch-package) to make it work with native Save button. (We are working closely to change this with Strapi team).
+4. (Optional) If you want to override also the Save button to work with this plugin you need to follow instructions bellow. ⬇️⬇️
 
-1. Install `patch-package`
-   - `npm install patch-package` or `yarn add patch-package`
-2. Create folder `patches` in root of your project
-3. Add file `@strapi+plugin-sentry+4.0.0.patch` with content below
+## Override Save Button (Optional)
+
+You have to use [patch-package](https://www.npmjs.com/package/patch-package) to make it work with native Save button. _(We are working closely to change this with Strapi team)._
+
+1.  Install `patch-package`
+    - `npm install patch-package` or `yarn add patch-package`
+2.  Create folder `patches` in root of your project
+3.  Add file `@strapi+plugin-sentry+4.0.0.patch` with content below ⬇️
 
 ```
 diff --git a/node_modules/@strapi/admin/admin/src/content-manager/components/CollectionTypeFormWrapper/index.js b/node_modules/@strapi/admin/admin/src/content-manager/components/CollectionTypeFormWrapper/index.js
@@ -115,15 +130,36 @@ index aff6f07..c5d7b87 100644
              <form noValidate onSubmit={handleSubmit}>
 ```
 
-## Will be added
- - [] history for single types
- - [] remove patch-package problem
- - [] autosave
- - [] update current version (without creating new one)
+## Road map
+
+- ✨ Remove patch-package problem
+- ✨ History for single types
+- ✨ Autosave
+- ✨ Update of the current version (without creating new one)
 
 ## Know limitation
-- Not working with UID and unique fields
 
+- ✋ Not working with UID and unique fields
 
 ## Bugs
-We are using GitHub Issues to manage our public bugs. We keep a close eye on this so before filing a new issue, try to make sure the problem does not already exist.
+
+We are using [GitHub Issues](https://github.com/notum-cz/strapi-plugin-content-versioning/issues) to manage our public bugs. We keep a close eye on this so before filing a new issue, try to make sure the problem does not already exist.
+
+## Authors
+
+![Martin Capek](https://notum.cz/wp-content/uploads/2022/02/stazeny-soubor-20.png)
+Main star is Martin Čapek https://github.com/martincapek
+
+![Tomas Novotny](https://notum.cz/wp-content/uploads/2022/02/stazeny-soubor-10.png)
+Tomáš Novotný
+
+![Ondrej Janosik](https://notum.cz/wp-content/uploads/2022/02/stazeny-soubor-2.png)
+Ondřej Janošík
+
+All working in [Notum Technologies](https://notum.cz/en) in Brno, CZ
+
+## Keywords
+
+- [strapi](https://www.npmjs.com/search?q=keywords:strapi)
+- [plugin](https://www.npmjs.com/search?q=keywords:plugin)
+- [version](https://www.npmjs.com/search?q=keywords:version)
