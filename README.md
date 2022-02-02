@@ -15,8 +15,6 @@ or use `yarn add @notum-cz/strapi-plugin-content-versioning`
 1. Versioning can be **enabled in settings of Content Type**. _Same as localziation plugin._
 2. You need to have **enabled draft/publish** system on your content type.
 3. You need to create/modify file `config/plugins.js` with
-4. Add the line `"postinstall": "patch-package",` to the scripts section of the `package.json`
-
 ```
 module.exports = ({ env }) => ({
 	"content-versioning": {
@@ -37,7 +35,7 @@ You have to use [patch-package](https://www.npmjs.com/package/patch-package) to 
 2. Create folder `patches` in root of your project
 3. Add file `@strapi+admin+4.0.2.patch` with content below ⬇️
 4. Add the line `"postinstall": "patch-package",` to the scripts section of the `package.json`
-
+5. Run `npm run postinstall`
 
 ```
 diff --git a/node_modules/@strapi/admin/admin/src/content-manager/components/CollectionTypeFormWrapper/index.js b/node_modules/@strapi/admin/admin/src/content-manager/components/CollectionTypeFormWrapper/index.js
