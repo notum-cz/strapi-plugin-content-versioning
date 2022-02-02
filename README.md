@@ -8,8 +8,6 @@ Versioning can be enabled in settings of Content Type. Same as localziation plug
 
 Simply run `npm i @notum-cz/strapi-plugin-content-versioning` or `yarn add @notum-cz/strapi-plugin-content-versioning`
 
-
-
 ## Overriding `save` button (not necessary but recommended)
 
 You have to use [patch-package](https://www.npmjs.com/package/patch-package) to make it work with native Save button. (We are working closely to change this with Strapi team).
@@ -18,6 +16,8 @@ You have to use [patch-package](https://www.npmjs.com/package/patch-package) to 
    - `npm install patch-package` or `yarn add patch-package`
 2. Create folder `patches` in root of your project
 3. Add file `@strapi+plugin-sentry+4.0.0.patch` with content below
+4. You will need the @strapi/plugin-sentry installed for the patcher to work.
+5. Add the line `"postinstall": "patch-package",` to the scripts section of the `package.json`
 
 ```
 diff --git a/node_modules/@strapi/admin/admin/src/content-manager/components/CollectionTypeFormWrapper/index.js b/node_modules/@strapi/admin/admin/src/content-manager/components/CollectionTypeFormWrapper/index.js
