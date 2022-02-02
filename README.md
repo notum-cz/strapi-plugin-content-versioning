@@ -1,8 +1,11 @@
 # Strapi Plugin-Content-Versioning
 
-This plugin enables you to version Content Type in Strapi v4! 🎉🎉🎉
+**Disclaimer!!**: This plugin is an early alpha version mainly used for internal testing before a proper release. We do not encourage you to use it in production (but we are working heavily so this could change in near future).
 
-It enables to select published version, so you can have multiple draft versions. 📜
+This plugin enables you to versioning Content Types in Strapi v4! 🎉🎉🎉
+* Heaving multiple draft versions✅
+* Keeping a history of all changes (with time travel) ✅
+* Allowing you to have different published and draft data ✅
 
 # Instalation
 
@@ -10,7 +13,7 @@ Run `npm i @notum-cz/strapi-plugin-content-versioning`
 or use `yarn add @notum-cz/strapi-plugin-content-versioning`
 
 
-# Important, read before instalation
+# Important - read before instalation
 
 1. Versioning can be **enabled in settings of Content Type**. _Same as localziation plugin._
 2. You need to have **enabled draft/publish** system on your content type.
@@ -23,11 +26,11 @@ module.exports = ({ env }) => ({
 });
 ```
 
-4. (Optional) If you want to override also the Save button to work with this plugin you need to follow instructions bellow. ⬇️⬇️
+4. (Optional) If you want to override also the Save button to work with this plugin you need to follow the instructions below. ⬇️⬇️
 
 ## Override Save Button (Optional)
 
-You have to use [patch-package](https://www.npmjs.com/package/patch-package) to make it work with native Save button. _(We are working closely to change this with Strapi team)._
+You have to use [patch-package](https://www.npmjs.com/package/patch-package) to make it work with native Save button. _(We are working closely with tthe core team to change this)._
 
 
 1. Install `patch-package`
@@ -135,31 +138,31 @@ index aff6f07..c5d7b87 100644
 
 ## Road map
 
-- ✨ Remove patch-package problem
-- ✨ History for single types
+- ✨ Fix of the "patch-package problem"
+- ✨ Extension of functionality also for for single types
 - ✨ Autosave
-- ✨ Update of the current version (without creating new one)
+- ✨ Update of the current version without creating new history item
 
 ## Know limitation
 
-- ✋ Not working with UID and unique fields
+- ✋ ⛔️ Not working with UID and unique fields
 
 ## Bugs
 
-We are using [GitHub Issues](https://github.com/notum-cz/strapi-plugin-content-versioning/issues) to manage our public bugs. We keep a close eye on this so before filing a new issue, try to make sure the problem does not already exist.
+We are using [GitHub Issues](https://github.com/notum-cz/strapi-plugin-content-versioning/issues) to manage bugs. Please have a look at existing issues before creating a new one.
 
 ## Authors
 
 ![Martin Capek](https://notum.cz/wp-content/uploads/2022/02/stazeny-soubor-20.png)
-Main star is Martin Čapek https://github.com/martincapek
+The main star: Martin Čapek https://github.com/martincapek
 
 ![Tomas Novotny](https://notum.cz/wp-content/uploads/2022/02/stazeny-soubor-10.png)
-Tomáš Novotný
+Tech problem solver: Tomáš Novotný
 
 ![Ondrej Janosik](https://notum.cz/wp-content/uploads/2022/02/stazeny-soubor-2.png)
-Ondřej Janošík
+Project owner: Ondřej Janošík
 
-All working in [Notum Technologies](https://notum.cz/en) in Brno, CZ
+Happily created by [Notum Technologies](https://notum.cz/en) - official STRAPI partner and Czech based custom development agency - to share some of our Strapi expertise with the broader open source community.
 
 ## Keywords
 
