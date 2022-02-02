@@ -9,6 +9,7 @@ It enables to select published version, so you can have multiple draft versions.
 Run `npm i @notum-cz/strapi-plugin-content-versioning`
 or use `yarn add @notum-cz/strapi-plugin-content-versioning`
 
+
 # Important, read before instalation
 
 1. Versioning can be **enabled in settings of Content Type**. _Same as localziation plugin._
@@ -30,10 +31,13 @@ module.exports = ({ env }) => ({
 
 You have to use [patch-package](https://www.npmjs.com/package/patch-package) to make it work with native Save button. _(We are working closely to change this with Strapi team)._
 
-1.  Install `patch-package`
-    - `npm install patch-package` or `yarn add patch-package`
-2.  Create folder `patches` in root of your project
-3.  Add file `@strapi+admin+4.0.2.patch` with content below ⬇️
+
+1. Install `patch-package`
+   - `npm install patch-package` or `yarn add patch-package`
+2. Create folder `patches` in root of your project
+3. Add file `@strapi+admin+4.0.2.patch` with content below ⬇️
+4. Add the line `"postinstall": "patch-package",` to the scripts section of the `package.json`
+
 
 ```
 diff --git a/node_modules/@strapi/admin/admin/src/content-manager/components/CollectionTypeFormWrapper/index.js b/node_modules/@strapi/admin/admin/src/content-manager/components/CollectionTypeFormWrapper/index.js
