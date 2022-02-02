@@ -32,7 +32,7 @@ You have to use [patch-package](https://www.npmjs.com/package/patch-package) to 
 1.  Install `patch-package`
     - `npm install patch-package` or `yarn add patch-package`
 2.  Create folder `patches` in root of your project
-3.  Add file `@strapi+plugin-sentry+4.0.0.patch` with content below ⬇️
+3.  Add file `@strapi+admin+4.0.2.patch` with content below ⬇️
 
 ```
 diff --git a/node_modules/@strapi/admin/admin/src/content-manager/components/CollectionTypeFormWrapper/index.js b/node_modules/@strapi/admin/admin/src/content-manager/components/CollectionTypeFormWrapper/index.js
