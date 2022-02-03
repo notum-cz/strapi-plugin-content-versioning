@@ -23,9 +23,13 @@ module.exports = {
       data.createdBy = ctx.state.user.id;
     } else {
       olderVersions = await strapi.db.query(slug).findMany({
-        select: ["id", "vuid", "versionNumber"],
         where: { vuid: data.vuid },
+        populate: {
+          createdBy: true,
+        },
       });
+
+      console.log(olderVersions);
 
       publishedId = await strapi.db.query(slug).findOne({
         select: ["id", "vuid", "versionNumber", "createdAt"],
@@ -35,6 +39,16 @@ module.exports = {
       const latestVersion = _.maxBy(olderVersions, (v) => v.versionNumber);
       const latestVersionNumber = latestVersion && latestVersion.versionNumber;
       data.versionNumber = (latestVersionNumber || 0) + 1;
+
+      try {
+        if (olderVersions && olderVersions.length > 0) {
+          data.createdBy = olderVersions[0].createdBy.id;
+        }
+      } catch (e) {
+        // Fallback set logged user ID
+        data.createdBy = ctx.state.user.id;
+      }
+
       data.updatedBy = ctx.state.user.id;
 
       if (!publishedId) {
