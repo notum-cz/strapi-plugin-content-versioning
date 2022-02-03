@@ -26,10 +26,11 @@ module.exports = async ({ oldContentTypes, contentTypes }) => {
       const ids = (await strapi.db.query(uid).findMany({ select: "id" })).map(
         (item) => item.id
       );
+
       for (const id of ids) {
         await strapi.db
           .query(uid)
-          .update({ where: { id }, data: { versionNumber: 1, vuid: uuid() } });
+          .update({ where: { id }, data: { versionNumber: 1, vuid: uuid(), isVisibleInListView: true } });
       }
     }
   }

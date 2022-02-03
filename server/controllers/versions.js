@@ -15,10 +15,12 @@ module.exports = {
 
     // setup data, get old version and new version number
     let olderVersions = [];
-    let publishedId = null
+    let publishedId = null;
     if (!data.vuid) {
       data.vuid = uuid();
       data.versionNumber = 1;
+      data.updatedBy = ctx.state.user.id;
+      data.createdBy = ctx.state.user.id;
     } else {
       olderVersions = await strapi.db.query(slug).findMany({
         select: ["id", "vuid", "versionNumber"],
@@ -26,13 +28,14 @@ module.exports = {
       });
 
       publishedId = await strapi.db.query(slug).findOne({
-        select: ["id", "vuid", "versionNumber"],
+        select: ["id", "vuid", "versionNumber", "createdAt"],
         where: { vuid: data.vuid, publishedAt: { $notNull: true } },
       });
 
       const latestVersion = _.maxBy(olderVersions, (v) => v.versionNumber);
       const latestVersionNumber = latestVersion && latestVersion.versionNumber;
       data.versionNumber = (latestVersionNumber || 0) + 1;
+      data.updatedBy = ctx.state.user.id;
 
       if (!publishedId) {
         await strapi.db.query(slug).updateMany({
@@ -45,7 +48,7 @@ module.exports = {
             isVisibleInListView: false,
           },
         });
-      } 
+      }
     }
     data.versions = olderVersions.map((v) => v.id);
 
@@ -55,7 +58,7 @@ module.exports = {
       data: {
         ...newData,
         publishedAt: null,
-        isVisibleInListView: !publishedId
+        isVisibleInListView: !publishedId,
       },
     });
     for (const version of data.versions) {

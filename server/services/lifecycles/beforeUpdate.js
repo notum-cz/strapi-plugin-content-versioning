@@ -1,7 +1,5 @@
 "use strict";
 
-// const saveVersion = require("./saveVersion");
-
 const beforeUpdate = async (event) => {
   const { params } = event;
   const { data, where } = params;
@@ -31,14 +29,6 @@ const beforeUpdate = async (event) => {
       },
     });
   }
-  //   const versionNumber = data && data.versionNumber;
-  //   if (versionNumber) {
-  //     await saveVersion(event.model.uid, {
-  //       ...data,
-  //       id: params.where.id,
-  //     });
-  //     event.params.data = { versionNumber };
-  //   }
 };
 
 module.exports = beforeUpdate;
