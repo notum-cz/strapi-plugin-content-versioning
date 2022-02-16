@@ -7,7 +7,7 @@ This plugin enables you to versioning Content Types in Strapi v4! 🎉🎉🎉
 * Keeping a history of all changes (with time travel) ✅
 * Allowing you to have different published and draft data ✅
 
-# Instalation
+# Installation
 
 Run `npm i @notum-cz/strapi-plugin-content-versioning`
 or use `yarn add @notum-cz/strapi-plugin-content-versioning`
@@ -15,7 +15,7 @@ or use `yarn add @notum-cz/strapi-plugin-content-versioning`
 
 # Important - read before instalation
 
-1. Versioning can be **enabled in settings of Content Type**. _Same as localziation plugin._
+1. Versioning can be **enabled in settings of Content Type**. _Same as localization plugin._
 2. You need to have **enabled draft/publish** system on your content type.
 3. You need to create/modify file `config/plugins.js` with
 ```
