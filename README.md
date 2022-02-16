@@ -1,23 +1,30 @@
 # Strapi Plugin-Content-Versioning
 
-**Disclaimer!!**: This plugin is an early alpha version mainly used for internal testing before a proper release. We do not encourage you to use it in production (but we are working heavily so this could change in near future).
+**⚠️⚠️⚠️**: Currently an **early alpha version.** <br> We do not encourage you to use it in production (but we are working ☀️🌙).
 
-This plugin enables you to versioning Content Types in Strapi v4! 🎉🎉🎉
-* Having multiple draft versions✅
-* Keeping a history of all changes (with time travel) ✅
-* Allowing you to have different published and draft data ✅
+### A Strapi plugin for managing versions of your content.
 
-# Instalation
+This plugin provides the ability to switch between different content version as they were created.
 
-Run `npm i @notum-cz/strapi-plugin-content-versioning`
-or use `yarn add @notum-cz/strapi-plugin-content-versioning`
+### Benefits
 
+✅ Have **multiple draft versions** <br>
+✅ Keeping a **history of all changes (with time travel)** <br>
+✅ Allows you to have **different published and draft data** <br>
 
-# Important - read before instalation
+## 🧑‍💻 Install
 
-1. Versioning can be **enabled in settings of Content Type**. _Same as localziation plugin._
-2. You need to have **enabled draft/publish** system on your content type.
+```
+npm i @notum-cz/strapi-plugin-content-versioning
+yarn add @notum-cz/strapi-plugin-content-versioning
+```
+
+## 🖐⚠️ Read before instalation
+
+1. **Versioning** must be **enabled in settings of Content Type**. _Same as localziation plugin._
+2. You need to have **enabled draft/publish** system on your **content type.**
 3. You need to create/modify file `config/plugins.js` with
+
 ```
 module.exports = ({ env }) => ({
 	"content-versioning": {
@@ -28,10 +35,12 @@ module.exports = ({ env }) => ({
 
 4. (Optional) If you want to override also the Save button to work with this plugin you need to follow the instructions below. ⬇️⬇️
 
-## Override Save Button (Optional)
+## 💾 Override Save Button (Optional)
+
+<details>
+  <summary>Click to see details ➕</summary>
 
 You have to use [patch-package](https://www.npmjs.com/package/patch-package) to make it work with native Save button. _(We are working closely with tthe core team to change this)._
-
 
 1. Install `patch-package`
    - `npm install patch-package` or `yarn add patch-package`
@@ -136,7 +145,9 @@ index aff6f07..c5d7b87 100644
              <form noValidate onSubmit={handleSubmit}>
 ```
 
-## Road map
+</details>
+
+## 🛣️ Road map
 
 - ✨ Fix of the "patch-package problem"
 - ✨ Extension of functionality also for for single types
@@ -147,22 +158,27 @@ index aff6f07..c5d7b87 100644
 
 - ✋ ⛔️ Not working with UID and unique fields
 
-## Bugs
+## 🐛 Bugs
 
-We are using [GitHub Issues](https://github.com/notum-cz/strapi-plugin-content-versioning/issues) to manage bugs. Please have a look at existing issues before creating a new one.
+We are using [GitHub Issues](https://github.com/notum-cz/strapi-plugin-content-versioning/issues) to manage bugs. <br>
+If you want to help us you would be a rock ⭐.
 
-## Authors
+## 🧔 Authors
 
-![Martin Capek](https://notum.cz/wp-content/uploads/2022/02/stazeny-soubor-20.png)
-The main star: Martin Čapek https://github.com/martincapek
+The main star: **Martin Čapek** https://github.com/martincapek <br>
+Tech problem solver: **Tomáš Novotný** <br>
+Project owner: **Ondřej Janošík** <br>
 
-![Tomas Novotny](https://notum.cz/wp-content/uploads/2022/02/stazeny-soubor-10.png)
-Tech problem solver: Tomáš Novotný
+#### 🚀 Created with passion by [Notum Technologies](https://notum.cz/en)
 
-![Ondrej Janosik](https://notum.cz/wp-content/uploads/2022/02/stazeny-soubor-2.png)
-Project owner: Ondřej Janošík
+- Official STRAPI partner and Czech based custom development agency.
+- We love to share expertise with the open source community, that's why this plugin was created. 🖤
 
-Happily created by [Notum Technologies](https://notum.cz/en) - official STRAPI partner and Czech based custom development agency - to share some of our Strapi expertise with the broader open source community.
+### 🎯 [How can Notum help you with your STRAPI project?](https://notum.cz/en/strapi/)
+
+✔️ We can help you develop custom STRAPI, web and mobile apps. <br>
+✔️ With 100+ projects, open communication and great project management we have the tools to get your project across the finish line.<br>
+📅 If you want to discuss your Strapi project with our CEO book a meeting [Book a free 15min Calendly ](https://calendly.com/ondrej-janosik)
 
 ## Keywords
 
