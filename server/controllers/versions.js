@@ -29,8 +29,6 @@ module.exports = {
         },
       });
 
-      console.log(olderVersions);
-
       publishedId = await strapi.db.query(slug).findOne({
         select: ["id", "vuid", "versionNumber", "createdAt"],
         where: { vuid: data.vuid, publishedAt: { $notNull: true } },

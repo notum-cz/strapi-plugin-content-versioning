@@ -38,8 +38,6 @@ const Versions = () => {
     return null;
   }
 
-  console.log(modifiedData)
-
   const [data, setData] = useState([]);
   const [publishedVersion, setPublishedVersion] = useState(undefined);
 
@@ -128,11 +126,8 @@ const Versions = () => {
     }
   }, [modifiedData, push, request, slug]);
 
-  console.log(data);
-
   return (
     <>
-      {/* TODO add translation */}
       <Box marginTop={8}>
         <TableLabel textColor="neutral600">
           {formatMessage({
