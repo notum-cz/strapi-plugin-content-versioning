@@ -1,6 +1,6 @@
 {
   "name": "@notum-cz/strapi-plugin-content-versioning",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "This plugin enables content versioning",
   "license": "SEE LICENSE IN LICENSE",
   "author": "Notum Technologies s.r.o. <info@notum.cz> (https://notum.cz/en/strapi)",
