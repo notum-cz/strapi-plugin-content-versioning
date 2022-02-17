@@ -1,5 +1,7 @@
 # Strapi Plugin-Content-Versioning
 
+![Plugin in action](https://notum.cz/wp-content/uploads/2022/02/strapi-notum-versioning-v2-2.gif "Plugin in action")
+
 **⚠️⚠️⚠️**: Currently an **early alpha version.** <br> We do not encourage you to use it in production (but we are working ☀️🌙).
 
 ### A Strapi plugin for managing versions of your content.
