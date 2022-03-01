@@ -19,9 +19,9 @@ npm i @notum-cz/strapi-plugin-content-versioning
 yarn add @notum-cz/strapi-plugin-content-versioning
 ```
 
-## 🖐⚠️ Read before instalation
+## 🖐⚠️ Read before installation
 
-1. **Versioning** must be **enabled in settings of Content Type**. _Same as localziation plugin._
+1. **Versioning** must be **enabled in settings of Content Type**. _Same as localization plugin._
 2. You need to have **enabled draft/publish** system on your **content type.**
 3. You need to create/modify file `config/plugins.js` with
 
@@ -40,7 +40,7 @@ module.exports = ({ env }) => ({
 <details>
   <summary>Click to see details ➕</summary>
 
-You have to use [patch-package](https://www.npmjs.com/package/patch-package) to make it work with native Save button. _(We are working closely with tthe core team to change this)._
+You have to use [patch-package](https://www.npmjs.com/package/patch-package) to make it work with native Save button. _(We are working closely with the core team to change this)._
 
 1. Install `patch-package`
    - `npm install patch-package` or `yarn add patch-package`
@@ -150,7 +150,7 @@ index aff6f07..c5d7b87 100644
 ## 🛣️ Road map
 
 - ✨ Fix of the "patch-package problem"
-- ✨ Extension of functionality also for for single types
+- ✨ Extension of functionality also for single types
 - ✨ Autosave
 - ✨ Update of the current version without creating new history item
 
@@ -178,7 +178,7 @@ Project owner: **Ondřej Janošík** <br>
 
 ✔️ We can help you develop custom STRAPI, web and mobile apps. <br>
 ✔️ With 100+ projects, open communication and great project management we have the tools to get your project across the finish line.<br>
-📅 If you want to discuss your Strapi project with our CEO book a meeting [Book a free 15min Calendly ](https://calendly.com/ondrej-janosik)
+📅 If you want to discuss your Strapi project with our CEO, book a meeting [Book a free 15min Calendly ](https://calendly.com/ondrej-janosik)
 
 ## Keywords
 
