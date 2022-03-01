@@ -1,20 +1,15 @@
-"use strict";
+'use strict';
 
-module.exports = [
-  {
-    method: "POST",
-    path: `/:slug/save`,
-    handler: "versions.save",
-    config: {
-      policies: [
-        "admin::isAuthenticatedAdmin",
-        {
-          name: "admin::hasPermissions",
-          config: {
-            actions: ["plugin::content-versioning.save"],
-          },
-        },
-      ],
-    },
+const adminRoutes = require('./admin');
+const clientRoutes = require('./client');
+
+module.exports = {
+  admin: {
+    type: 'admin',
+    routes: adminRoutes,
   },
-];
+  'content-api': {
+    type: 'content-api',
+    routes: clientRoutes,
+  },
+};
