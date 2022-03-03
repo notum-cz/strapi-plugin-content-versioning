@@ -17,21 +17,4 @@ module.exports = [
       policies: [],
     },
   },
-  /**
-  {
-    method: 'PUT',
-    path: '/:slug/version/:versionId',
-    handler: 'client.put',
-    config: {
-      policies: [],
-    },
-  },
-  {
-    method: 'DELETE',
-    path: '/:slug/version/:versionId',
-    handler: 'client.deleteVersion',
-    config: {
-      policies: [],
-    },
-  }, */
 ];
