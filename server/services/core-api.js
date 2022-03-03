@@ -4,7 +4,7 @@ const uuid = require('uuid');
 const _ = require('lodash');
 const { getService } = require('../utils');
 
-module.exports = () => ({
+module.exports = {
   async createVersion(slug, data, user) {
     const model = await strapi.getModel(slug);
 
@@ -77,4 +77,20 @@ module.exports = () => ({
     }
     return result;
   },
-});
+
+  async findAllForUser(slug, user) {
+    const model = await strapi.getModel(slug);
+
+    const allItems = await strapi.db.query(slug).findMany({
+      populate: {
+        versions: true,
+      },
+      where: {
+        createdBy: user.id,
+        isVisibleInListView: true,
+      },
+    });
+
+    return allItems;
+  },
+};

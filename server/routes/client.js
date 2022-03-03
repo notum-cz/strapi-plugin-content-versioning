@@ -3,21 +3,21 @@
 module.exports = [
   {
     method: 'POST',
-    path: '/:slug/:postId',
-    handler: 'client.post',
+    path: '/:slug/:itemId',
+    handler: 'client.create',
+    config: {
+      policies: [],
+    },
+  },
+  {
+    method: 'GET',
+    path: '/:slug',
+    handler: 'client.findAllForUser',
     config: {
       policies: [],
     },
   },
   /**
-  {
-    method: 'GET',
-    path: '/:slug',
-    handler: 'client.findAllVersions',
-    config: {
-      policies: [],
-    },
-  },
   {
     method: 'PUT',
     path: '/:slug/version/:versionId',
