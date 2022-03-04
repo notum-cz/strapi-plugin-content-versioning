@@ -14,8 +14,7 @@ import {
   useNotification,
 } from "@strapi/helper-plugin";
 import { Button } from "@strapi/design-system/Button";
-import Earth from "@strapi/icons/Earth";
-import EarthStriked from "@strapi/icons/EarthStriked";
+import moment from "moment";
 
 import { request } from "@strapi/helper-plugin";
 
@@ -52,8 +51,9 @@ const Versions = () => {
         versionNumber: v.versionNumber,
         label: `v${v.versionNumber}`,
         publishedAt: v.publishedAt,
+        createdAt: v.createdAt,
       }));
-      const sortedVersions = versions.sort(
+      const sortedVersions = [...versions].sort(
         (a, b) => b.versionNumber - a.versionNumber
       );
       setData(sortedVersions);
@@ -71,7 +71,7 @@ const Versions = () => {
           (v) => v.versionNumber
         );
 
-        setPublishedVersion(publishedVersion && publishedVersion.versionNumber);
+        setPublishedVersion(publishedVersion);
       }
     },
     [_, hasDraftAndPublish, setData, setPublishedVersion]
@@ -141,27 +141,40 @@ const Versions = () => {
       </Box>
       <Stack size={4}>
         {publishedVersion && (
-          <Flex justifyContent="space-between">
+          <div>
             <Typography fontWeight="bold">
               {formatMessage({
                 id: getTrad("containers.Edit.currentPublishedVersion"),
                 defaultMessage: "Published version",
               })}
             </Typography>
-            <Typography>{`v${publishedVersion}`}</Typography>
-          </Flex>
+            <div>
+              <Typography>{`v${publishedVersion.versionNumber}`} | </Typography>
+
+              <Typography variant="pi">
+                {moment(publishedVersion.publishedAt).format(
+                  "DD. MM. YYYY, hh:mm:ss"
+                )}
+              </Typography>
+            </div>
+          </div>
         )}
-        <Flex justifyContent="space-between">
+        <div style={{ marginBottom: 20 }}>
           <Typography fontWeight="bold">
             {formatMessage({
               id: getTrad("containers.Edit.currentShowedVersion"),
-              defaultMessage: "Showed version",
+              defaultMessage: "Currently shown version",
             })}
           </Typography>
-          <Typography>
-            {isCreatingEntry ? "-" : `v${initialData.versionNumber}`}
-          </Typography>
-        </Flex>
+          <div>
+            <Typography>
+              {isCreatingEntry ? "-" : `v${initialData.versionNumber}`} |{" "}
+            </Typography>
+            <Typography variant="pi">
+              {moment(initialData.createdAt).format("DD. MM. YYYY, hh:mm:ss")}
+            </Typography>
+          </div>
+        </div>
         {data.length > 0 && (
           <Select
             name={"version-select"}
@@ -169,19 +182,35 @@ const Versions = () => {
               id: getTrad("components.Edit.versionSelectPlaceholder"),
               defaultMessage: "Select version",
             })}
+            label={formatMessage({
+              id: getTrad("components.Edit.versionChangeVersion"),
+              defaultMessage: "Change to version",
+            })}
             onChange={handleChange}
           >
             {data.map((option) => (
               <Option
                 key={option.versionNumber}
                 value={option.versionNumber}
-                startIcon={option.publishedAt ? <Earth /> : <EarthStriked />}
+                startIcon={
+                  <div
+                    style={{
+                      height: "6px",
+                      borderRadius: "50%",
+                      width: "6px",
+                      background: option.publishedAt ? "green" : "gray",
+                    }}
+                  />
+                }
               >
-                {option.label}
+                {`${option.label} ${moment(option.createdAt).format(
+                  "DD. MM. YYYY, hh:mm:ss"
+                )}`}
               </Option>
             ))}
           </Select>
         )}
+        {/* TODO: preview for FE app */}
         {/* {!isCreatingEntry && (
           <Button variant="secondary">
             {formatMessage({
@@ -190,10 +219,10 @@ const Versions = () => {
             })}
           </Button>
         )} */}
-        <Button variant="default" onClick={onSaveClick}>
+        <Button variant="secondary" fullWidth onClick={onSaveClick}>
           {formatMessage({
             id: getTrad("containers.Edit.buttonSave"),
-            defaultMessage: "Save as a new version",
+            defaultMessage: "Save new version",
           })}
         </Button>
       </Stack>
