@@ -1,7 +1,9 @@
 'use strict';
 
-const versions = require('./versions');
+const adminController = require('./admin');
+const clientController = require('./client');
 
 module.exports = {
-  versions,
+  admin: adminController,
+  client: clientController,
 };
