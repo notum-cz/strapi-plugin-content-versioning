@@ -1,14 +1,14 @@
-'use strict';
+"use strict";
 
-const uuid = require('uuid');
-const _ = require('lodash');
-const { getService } = require('../utils');
+const uuid = require("uuid");
+const _ = require("lodash");
+const { getService } = require("../utils");
 
 module.exports = {
   async createVersion(slug, data, user) {
     const model = await strapi.getModel(slug);
 
-    const { createNewVersion } = getService('content-types');
+    const { createNewVersion } = getService("content-types");
 
     // setup data, get old version and new version number
     let olderVersions = [];
@@ -27,7 +27,7 @@ module.exports = {
       });
 
       publishedId = await strapi.db.query(slug).findOne({
-        select: ['id', 'vuid', 'versionNumber', 'createdAt'],
+        select: ["id", "vuid", "versionNumber", "createdAt"],
         where: { vuid: data.vuid, publishedAt: { $notNull: true } },
       });
 
@@ -79,7 +79,9 @@ module.exports = {
   },
 
   async findAllForUser(slug, user) {
-    const model = await strapi.getModel(slug);
+    if (!user) {
+      return [];
+    }
 
     const allItems = await strapi.db.query(slug).findMany({
       populate: {
