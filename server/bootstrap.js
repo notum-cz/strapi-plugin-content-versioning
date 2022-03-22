@@ -23,6 +23,12 @@ module.exports = async ({ strapi }) => {
         };
       }
 
+      if (ctx.method === "POST") {
+        delete ctx.request.body.vuid;
+        delete ctx.request.body.versionNumber;
+        delete ctx.request.body.versions;
+      }
+
       return next();
     }
   );

@@ -25,7 +25,7 @@ export default {
   },
 
   bootstrap(app) {
-    app.injectContentManagerComponent("editView", "informations", {
+    app.injectContentManagerComponent("editView", "right-links", {
       name: "Versions",
       Component: Versions,
     });

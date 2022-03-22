@@ -5,7 +5,7 @@ import { useIntl } from "react-intl";
 import { Box } from "@strapi/design-system/Box";
 import { Stack } from "@strapi/design-system/Stack";
 import { Divider } from "@strapi/design-system/Divider";
-import { TableLabel } from "@strapi/design-system/Text";
+// import { TableLabel } from "@strapi/design-system/Text";
 import { Select, Option } from "@strapi/design-system/Select";
 import { Typography } from "@strapi/design-system/Typography";
 import { Flex } from "@strapi/design-system/Flex";
@@ -30,6 +30,7 @@ const Versions = () => {
     slug,
     hasDraftAndPublish,
     layout,
+    isDuplicatingEntry,
   } = useCMEditViewDataManager();
   const toggleNotification = useNotification();
 
@@ -127,18 +128,32 @@ const Versions = () => {
   }, [modifiedData, push, request, slug]);
 
   return (
-    <>
-      <Box marginTop={8}>
-        <TableLabel textColor="neutral600">
-          {formatMessage({
-            id: getTrad("components.Edit.versions"),
-            defaultMessage: "Versions",
-          })}
-        </TableLabel>
-      </Box>
+    <Box
+      as="aside"
+      aria-labelledby="versioning-informations"
+      background="neutral0"
+      borderColor="neutral150"
+      hasRadius
+      paddingBottom={4}
+      paddingLeft={4}
+      paddingRight={4}
+      paddingTop={6}
+      shadow="tableShadow"
+    >
+      <Typography
+        variant="sigma"
+        textColor="neutral600"
+        id="versioning-informations"
+      >
+        {formatMessage({
+          id: getTrad("components.Edit.versions"),
+          defaultMessage: "Versions",
+        })}
+      </Typography>
       <Box paddingTop={2} paddingBottom={6}>
         <Divider />
       </Box>
+
       <Stack size={4}>
         {publishedVersion && (
           <div>
@@ -149,33 +164,32 @@ const Versions = () => {
               })}
             </Typography>
             <div>
-              <Typography>{`v${publishedVersion.versionNumber}`} | </Typography>
-
-              <Typography variant="pi">
+              <Typography variant="pi">{`v${publishedVersion.versionNumber}`}</Typography>{" "}
+              <Typography variant="pi" color="Neutral600">
                 {moment(publishedVersion.publishedAt).format(
-                  "DD. MM. YYYY, hh:mm:ss"
+                  "MMM D, YYYY HH:mm"
                 )}
               </Typography>
             </div>
           </div>
         )}
-        <div style={{ marginBottom: 20 }}>
-          <Typography fontWeight="bold">
-            {formatMessage({
-              id: getTrad("containers.Edit.currentShowedVersion"),
-              defaultMessage: "Currently shown version",
-            })}
-          </Typography>
-          <div>
-            <Typography>
-              {isCreatingEntry ? "-" : `v${initialData.versionNumber}`} |{" "}
+        {!isCreatingEntry && (
+          <div style={{ marginBottom: 20 }}>
+            <Typography fontWeight="bold">
+              {formatMessage({
+                id: getTrad("containers.Edit.currentShowedVersion"),
+                defaultMessage: "Currently shown version",
+              })}
             </Typography>
-            <Typography variant="pi">
-              {moment(initialData.createdAt).format("DD. MM. YYYY, hh:mm:ss")}
-            </Typography>
+            <div>
+              <Typography variant="pi">v{initialData.versionNumber}</Typography>{" "}
+              <Typography variant="pi" textColor="neutral600">
+                {moment(initialData.createdAt).format("MMM D, YYYY HH:mm")}
+              </Typography>
+            </div>
           </div>
-        </div>
-        {data.length > 0 && (
+        )}
+        {!isDuplicatingEntry && data.length > 0 && (
           <Select
             name={"version-select"}
             placeholder={formatMessage({
@@ -198,13 +212,15 @@ const Versions = () => {
                       height: "6px",
                       borderRadius: "50%",
                       width: "6px",
-                      background: option.publishedAt ? "green" : "gray",
+                      background: option.publishedAt
+                        ? "rgb(50, 128, 72)"
+                        : "rgb(12, 117, 175)",
                     }}
                   />
                 }
               >
                 {`${option.label} ${moment(option.createdAt).format(
-                  "DD. MM. YYYY, hh:mm:ss"
+                  "MMM D, YYYY HH:mm"
                 )}`}
               </Option>
             ))}
@@ -226,7 +242,7 @@ const Versions = () => {
           })}
         </Button>
       </Stack>
-    </>
+    </Box>
   );
 };
 
