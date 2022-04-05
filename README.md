@@ -1,6 +1,6 @@
 # Strapi Plugin-Content-Versioning
 
-**⚠️⚠️⚠️**: Currently an **early alpha version.** <br> We do not encourage you to use it in production (but we are working ☀️🌙).
+**⚠️⚠️⚠️**: Currently an **beta.** <br> We are using it in production (but still working on it ☀️🌙).
 
 ### A Strapi plugin for managing versions of your content.
 
@@ -157,6 +157,8 @@ index aff6f07..c5d7b87 100644
 ## Know limitation
 
 - ✋ ⛔️ Not working with UID and unique fields
+- ✋ ⛔️ Not have i18n support 
+- ✋ ⛔️ Not working with relations
 
 ## 🐛 Bugs
 
