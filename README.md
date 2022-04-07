@@ -1,6 +1,6 @@
 # Strapi Plugin-Content-Versioning
 
-**⚠️⚠️⚠️**: Currently an **beta.** <br> We are using it in production (but still working on it ☀️🌙).
+**⚠️⚠️⚠️**: Currently a **beta.** <br> We are using it in production (but still working on it ☀️🌙).
 
 ### A Strapi plugin for managing versions of your content.
 
