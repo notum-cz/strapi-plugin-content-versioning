@@ -23,7 +23,8 @@ yarn add @notum-cz/strapi-plugin-content-versioning
 
 1. **Versioning** must be **enabled in settings of Content Type**. _Same as localization plugin._
 2. You need to have **enabled draft/publish** system on your **content type.**
-3. You need to create/modify file `config/plugins.js` with
+3. Roles that are going to use the plugin need to have permission enabled in the Settings > Roles > ... > Plugins view.
+4. You need to create/modify file `config/plugins.js` with
 
 ```
 module.exports = ({ env }) => ({
@@ -33,7 +34,7 @@ module.exports = ({ env }) => ({
 });
 ```
 
-4. (Optional) If you want to override also the Save button to work with this plugin you need to follow the instructions below. ⬇️⬇️
+5. (Optional) If you want to override also the Save button to work with this plugin you need to follow the instructions below. ⬇️⬇️
 
 ## 💾 Override Save Button (Optional)
 
