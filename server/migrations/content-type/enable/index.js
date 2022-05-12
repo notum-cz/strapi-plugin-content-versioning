@@ -1,7 +1,7 @@
 "use strict";
 
 const { getService } = require("../../../utils");
-const uuid = require("uuid");
+const { v4: uuid } = require("uuid");
 
 // if versioning is enabled set default version and vuid
 module.exports = async ({ oldContentTypes, contentTypes }) => {
