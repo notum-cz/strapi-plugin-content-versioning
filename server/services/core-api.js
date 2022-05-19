@@ -1,6 +1,6 @@
 "use strict";
 
-const uuid = require("uuid");
+const { v4: uuid } = require("uuid");
 const _ = require("lodash");
 const { getService } = require("../utils");
 
