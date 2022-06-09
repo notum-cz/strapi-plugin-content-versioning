@@ -3,6 +3,7 @@
 const { v4: uuid } = require("uuid");
 const _ = require("lodash");
 const { getService } = require("../utils");
+const { singular } = require("pluralize");
 
 module.exports = {
   async createVersion(slug, data, user) {
@@ -13,6 +14,7 @@ module.exports = {
     // setup data, get old version and new version number
     let olderVersions = [];
     let publishedId = null;
+
     if (!data.vuid) {
       data.vuid = uuid();
       data.versionNumber = 1;
@@ -23,6 +25,7 @@ module.exports = {
         where: { vuid: data.vuid },
         populate: {
           createdBy: true,
+          localizations: true,
         },
       });
 
@@ -59,17 +62,64 @@ module.exports = {
         });
       }
     }
+
     data.versions = olderVersions.map((v) => v.id);
 
     // remove old ids
     const newData = createNewVersion(slug, data);
+
     const result = await strapi.entityService.create(slug, {
       data: {
         ...newData,
         publishedAt: null,
         isVisibleInListView: !publishedId,
       },
+      populate: {
+        localizations: true,
+      },
     });
+
+    // set same localization for all previous version
+    const attrName = singular(model.collectionName);
+
+    const allLocalizations = olderVersions.flatMap((olderVersion) => {
+      return olderVersion.localizations.map((item) => ({
+        id: item.id,
+        vuid: item.vuid,
+        locale: item.locale,
+      }));
+    });
+
+    const uniqueLocalizations = _.uniqBy(allLocalizations, "vuid");
+
+    const allVersionsWithoutLang = (
+      await strapi.db.query(slug).findMany({
+        where: { vuid: { $in: uniqueLocalizations.map((item) => item.vuid) } },
+        populate: {
+          createdBy: true,
+          localizations: true,
+        },
+      })
+    ).map((item) => item.id);
+
+    for (const entityId of allVersionsWithoutLang) {
+      await strapi.db.connection.raw(
+        `DELETE FROM ${model.collectionName}_localizations_links WHERE ${attrName}_id=${entityId} AND inv_${attrName}_id=${result.id}`
+      );
+
+      await strapi.db.connection.raw(
+        `INSERT INTO ${model.collectionName}_localizations_links VALUES (${entityId},${result.id})`
+      );
+    }
+
+    // set latest for all different localizations for latest
+
+    for (const localization of result.localizations) {
+      await strapi.db.connection.raw(
+        `UPDATE ${model.collectionName}_localizations_links SET inv_${attrName}_id=${result.id} WHERE ${attrName}_id=${localization.id}`
+      );
+    }
+
     for (const version of data.versions) {
       await strapi.db.connection.raw(
         `INSERT INTO ${model.collectionName}_versions_links VALUES (${version},${result.id})`

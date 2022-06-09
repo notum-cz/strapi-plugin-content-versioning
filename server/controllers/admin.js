@@ -1,6 +1,6 @@
-'use strict';
+"use strict";
 
-const { getService } = require('../utils');
+const { getService } = require("../utils");
 
 module.exports = {
   async save(ctx) {
@@ -8,7 +8,7 @@ module.exports = {
     const { body: data } = ctx.request;
     const { user } = ctx.state;
 
-    const { createVersion } = getService('core-api');
+    const { createVersion } = getService("core-api");
 
     return await createVersion(slug, data, user);
   },

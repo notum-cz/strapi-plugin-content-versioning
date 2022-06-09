@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import _ from "lodash";
 import { useIntl } from "react-intl";
 import { Box } from "@strapi/design-system/Box";
@@ -23,6 +23,8 @@ import { getTrad } from "../../utils";
 const Versions = () => {
   const { formatMessage } = useIntl();
   const { push, replace } = useHistory();
+  const location = useLocation();
+
   const {
     initialData,
     modifiedData,
@@ -87,6 +89,7 @@ const Versions = () => {
       const selectedVersion = data.find((v) => v.versionNumber === value);
 
       push({
+        search: location.search,
         pathname: `/content-manager/collectionType/${slug}/${selectedVersion.id}`,
       });
     },
@@ -107,10 +110,14 @@ const Versions = () => {
     try {
       const result = await request(`/content-versioning/${slug}/save`, {
         method: "POST",
-        body: newData,
+        body: {
+          ...newData,
+          id: id,
+        },
       });
 
       replace({
+        search: location.search,
         pathname: `/content-manager/collectionType/${slug}/${result.id}`,
       });
     } catch (e) {
@@ -235,7 +242,12 @@ const Versions = () => {
             })}
           </Button>
         )} */}
-        <Button variant="secondary" fullWidth onClick={onSaveClick}>
+        <Button
+          variant="secondary"
+          fullWidth
+          onClick={onSaveClick}
+          disabled={isCreatingEntry || isDuplicatingEntry}
+        >
           {formatMessage({
             id: getTrad("containers.Edit.buttonSave"),
             defaultMessage: "Save new version",
