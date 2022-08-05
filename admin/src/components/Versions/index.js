@@ -14,7 +14,7 @@ import {
   useNotification,
 } from "@strapi/helper-plugin";
 import { Button } from "@strapi/design-system/Button";
-import moment from "moment";
+import { format, parseISO } from 'date-fns'
 
 import { request } from "@strapi/helper-plugin";
 
@@ -166,9 +166,7 @@ const Versions = () => {
             <div>
               <Typography variant="pi">{`v${publishedVersion.versionNumber}`}</Typography>{" "}
               <Typography variant="pi" color="Neutral600">
-                {moment(publishedVersion.publishedAt).format(
-                  "MMM D, YYYY HH:mm"
-                )}
+                { format(parseISO(publishedVersion.publishedAt), "MMM d, yyyy HH:mm")}
               </Typography>
             </div>
           </div>
@@ -184,7 +182,7 @@ const Versions = () => {
             <div>
               <Typography variant="pi">v{initialData.versionNumber}</Typography>{" "}
               <Typography variant="pi" textColor="neutral600">
-                {moment(initialData.createdAt).format("MMM D, YYYY HH:mm")}
+                {format(parseISO(initialData.createdAt), "MMM d, yyyy HH:mm")}
               </Typography>
             </div>
           </div>
@@ -202,28 +200,28 @@ const Versions = () => {
             })}
             onChange={handleChange}
           >
-            {data.map((option) => (
-              <Option
-                key={option.versionNumber}
-                value={option.versionNumber}
-                startIcon={
-                  <div
-                    style={{
-                      height: "6px",
-                      borderRadius: "50%",
-                      width: "6px",
-                      background: option.publishedAt
-                        ? "rgb(50, 128, 72)"
-                        : "rgb(12, 117, 175)",
-                    }}
-                  />
-                }
-              >
-                {`${option.label} ${moment(option.createdAt).format(
-                  "MMM D, YYYY HH:mm"
-                )}`}
-              </Option>
-            ))}
+            {data.map((option) => {
+              return (
+                <Option
+                  key={option.versionNumber}
+                  value={option.versionNumber}
+                  startIcon={
+                    <div
+                      style={{
+                        height: "6px",
+                        borderRadius: "50%",
+                        width: "6px",
+                        background: option.publishedAt
+                          ? "rgb(50, 128, 72)"
+                          : "rgb(12, 117, 175)",
+                      }}
+                    />
+                  }
+                >
+                  {`${option.label} ${format(parseISO(option.createdAt), "MMM d, yyyy HH:mm")}`}
+                </Option>
+              )
+            })}
           </Select>
         )}
         {/* TODO: preview for FE app */}
