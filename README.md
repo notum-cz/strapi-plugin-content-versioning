@@ -38,8 +38,6 @@ module.exports = ({ env }) => ({
 
 ## 💾 Override Save Button (Optional)
 
-
-
 You have to use [patch-package](https://www.npmjs.com/package/patch-package) to make it work with native Save button. _(We are working closely with the core team to change this)._
 
 1. Install `patch-package`
@@ -51,7 +49,51 @@ You have to use [patch-package](https://www.npmjs.com/package/patch-package) to 
 
 If patch for your strapi version is missing, please let me know or add it as file in pull request. Thanks!
 
+# <br> <br> ⚠️⚠️⚠️ Open call for help for an awesome plugin.
 
+## <br> History
+
+We felt this is an important feature that did not seem so complex.
+
+Therefore we rolled up our sleeves and got to work on it. We came up with **alpha quite fast** and were one the first ones to publish plugins in the new marketplace.
+
+## <br> The current state of the plugin
+
+<br> But then came the **early adopters** with more and **more complex data** structures and specific use cases that made our heads hurt.<br> <br>
+
+> We called in our top brains and made more improvements, things were still going great….
+
+# <br> BUT
+
+**BUT then we landed 2 amazing and very important projects.**
+
+Our focus went elsewhere and we left the plugin for some time without open-source love.
+
+# <br> **Open call for help and** **a bit of warning:**
+
+This plugin is **really nice challenge for a senior developer** to really code and have some fun.
+
+<br> Our senior developer Martin, the main author, is also available to answer your questions.
+
+<br> Issues are coming and people are using it: take a look here [https://github.com/notum-cz/strapi-plugin-content-versioning/issues](https://github.com/notum-cz/strapi-plugin-content-versioning/issues)
+
+<br> This could be you. Making this plugin great again.
+
+# <br> <br> The future and possibilities
+
+We believe this plugin may be in the marketplace’s top 5 most used plugins. But for that to become a reality we need fellow developers that would help and take it to the place it deserves to be.<br><br>
+
+**_“Therefore this is an open call to all the companies as well as solo developers to help us with this plugin.“_**
+
+We will happily do PRs and answer your questions.
+
+# <br> Please contact us at info@notum.cz
+
+![](https://cdn-images-1.medium.com/max/1200/1*4KRSunIx8v3tcYHyxKSYXQ.jpeg)
+
+Us helping you with this STRAPI plugin
+
+<br> <br> <hr> <br>
 
 ## 🛣️ Road map
 
@@ -63,7 +105,7 @@ If patch for your strapi version is missing, please let me know or add it as fil
 ## Know limitation
 
 - ✋ ⛔️ Not working with UID and unique fields
-- ✋ ⛔️ Not have i18n support 
+- ✋ ⛔️ Not have i18n support
 - ✋ ⛔️ Not working with relations
 
 ## 🐛 Bugs
