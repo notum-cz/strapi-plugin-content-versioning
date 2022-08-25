@@ -128,7 +128,7 @@ Project owner: **Ondřej Janošík** <br>
 
 ✔️ We can help you develop custom STRAPI, web and mobile apps. <br>
 ✔️ With 100+ projects, open communication and great project management we have the tools to get your project across the finish line.<br>
-📅 If you want to discuss your Strapi project with our CEO, book a meeting [Book a free 15min Calendly ](https://bit.ly/3thyPFX)
+📅 If you want to discuss your Strapi project, text us at info@notum.cz
 
 ## Keywords
 
