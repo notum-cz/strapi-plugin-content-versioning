@@ -22,10 +22,11 @@ const beforeUpdate = async (event) => {
         id: {
           $ne: item.id,
         },
+        locale: item.locale
       },
       data: {
         publishedAt: null,
-        isVisibleInListView: false,
+        isVisibleInListView: true,
       },
     });
   }

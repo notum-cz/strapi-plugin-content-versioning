@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useHistory, useLocation } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import _ from "lodash";
 import { useIntl } from "react-intl";
 import { Box } from "@strapi/design-system/Box";
@@ -8,7 +8,6 @@ import { Divider } from "@strapi/design-system/Divider";
 // import { TableLabel } from "@strapi/design-system/Text";
 import { Select, Option } from "@strapi/design-system/Select";
 import { Typography } from "@strapi/design-system/Typography";
-import { Flex } from "@strapi/design-system/Flex";
 import {
   useCMEditViewDataManager,
   useNotification,
@@ -16,15 +15,13 @@ import {
 import { Button } from "@strapi/design-system/Button";
 import { format, parseISO } from 'date-fns'
 
-import { request } from "@strapi/helper-plugin";
+import { request, useQueryParams } from "@strapi/helper-plugin";
 
 import { getTrad } from "../../utils";
 
 const Versions = () => {
   const { formatMessage } = useIntl();
   const { push, replace } = useHistory();
-  const location = useLocation();
-
   const {
     initialData,
     modifiedData,
@@ -40,6 +37,7 @@ const Versions = () => {
     return null;
   }
 
+  const [{ rawQuery }] = useQueryParams();
   const [data, setData] = useState([]);
   const [publishedVersion, setPublishedVersion] = useState(undefined);
 
@@ -85,15 +83,17 @@ const Versions = () => {
       if (!value) {
         return;
       }
-
+      
       const selectedVersion = data.find((v) => v.versionNumber === value);
+      console.log({selectedVersion});
+      //replace(`/content-manager/collectionType/${slug}/${selectedVersion.id}${rawQuery}`);
 
       push({
         search: location.search,
-        pathname: `/content-manager/collectionType/${slug}/${selectedVersion.id}`,
+        pathname: `/content-manager/collectionType/${slug}/${selectedVersion.id}${rawQuery}`,
       });
     },
-    [data, push, slug]
+    [data, replace, slug]
   );
 
   const onSaveClick = useCallback(async () => {
@@ -108,17 +108,17 @@ const Versions = () => {
     } = modifiedData;
 
     try {
-      const result = await request(`/content-versioning/${slug}/save`, {
+      const result = await request(`/content-versioning/${slug}/save${rawQuery}`, {
         method: "POST",
         body: {
           ...newData,
-          id: id,
+          id: id, // ?
         },
       });
 
       replace({
         search: location.search,
-        pathname: `/content-manager/collectionType/${slug}/${result.id}`,
+        pathname: `/content-manager/collectionType/${slug}/${result.id}${rawQuery}`,
       });
     } catch (e) {
       const name = _.get(e, "response.payload.error.name");
@@ -173,7 +173,7 @@ const Versions = () => {
             <div>
               <Typography variant="pi">{`v${publishedVersion.versionNumber}`}</Typography>{" "}
               <Typography variant="pi" color="Neutral600">
-                { format(parseISO(publishedVersion.publishedAt), "MMM d, yyyy HH:mm")}
+                {format(parseISO(publishedVersion.publishedAt), "MMM d, yyyy HH:mm")}
               </Typography>
             </div>
           </div>
@@ -207,28 +207,27 @@ const Versions = () => {
             })}
             onChange={handleChange}
           >
-            {data.map((option) => {
-              return (
-                <Option
-                  key={option.versionNumber}
-                  value={option.versionNumber}
-                  startIcon={
-                    <div
-                      style={{
-                        height: "6px",
-                        borderRadius: "50%",
-                        width: "6px",
-                        background: option.publishedAt
-                          ? "rgb(50, 128, 72)"
-                          : "rgb(12, 117, 175)",
-                      }}
-                    />
-                  }
-                >
-                  {`${option.label} ${format(parseISO(option.createdAt), "MMM d, yyyy HH:mm")}`}
-                </Option>
-              )
-            })}
+            {data.map((option) => (
+              <Option
+                key={option.versionNumber}
+                value={option.versionNumber}
+                startIcon={
+                  <div
+                    style={{
+                      height: "6px",
+                      borderRadius: "50%",
+                      width: "6px",
+                      background: option.publishedAt
+                        ? "rgb(50, 128, 72)"
+                        : "rgb(12, 117, 175)",
+                    }}
+                  />
+                }
+              >
+
+                {`${option.label} ${format(parseISO(option.createdAt), "MMM d, yyyy HH:mm")}`}
+              </Option>
+            ))}
           </Select>
         )}
         {/* TODO: preview for FE app */}
@@ -240,12 +239,7 @@ const Versions = () => {
             })}
           </Button>
         )} */}
-        <Button
-          variant="secondary"
-          fullWidth
-          onClick={onSaveClick}
-          disabled={isCreatingEntry || isDuplicatingEntry}
-        >
+        <Button variant="secondary" fullWidth onClick={onSaveClick}>
           {formatMessage({
             id: getTrad("containers.Edit.buttonSave"),
             defaultMessage: "Save new version",

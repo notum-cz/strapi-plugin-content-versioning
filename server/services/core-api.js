@@ -3,38 +3,69 @@
 const { v4: uuid } = require("uuid");
 const _ = require("lodash");
 const { getService } = require("../utils");
-const { singular } = require("pluralize");
+
 
 module.exports = {
-  async createVersion(slug, data, user) {
+  async createVersion(slug, data, user, options) {
     const model = await strapi.getModel(slug);
 
     const { createNewVersion } = getService("content-types");
 
     // setup data, get old version and new version number
     let olderVersions = [];
-    let publishedId = null;
+    let currentLocalVersions = [];
+    let localizedVersions = {};
 
-    if (!data.vuid) {
+    let publishedIds = null;
+    if (options?.plugins?.i18n?.locale) {
+      data.locale = options?.plugins?.i18n?.locale;
+    }
+
+    console.log({ ...data, options: options?.plugins?.i18n })
+
+    if (!data.vuid && !options?.plugins?.i18n?.relatedEntityId) {
       data.vuid = uuid();
       data.versionNumber = 1;
       data.updatedBy = user?.id;
       data.createdBy = user?.id;
     } else {
+      let filter = {};
+      if (data.vuid) {
+        filter.vuid = data.vuid
+      } else if (data.localizations) {
+        filter = { $or: data.localizations.map((l) => { return { id: l.id ?? l } }) };
+
+      } else if (options?.plugins?.i18n?.relatedEntityId) {
+        filter.id = options?.plugins?.i18n?.relatedEntityId
+      }
+
       olderVersions = await strapi.db.query(slug).findMany({
-        where: { vuid: data.vuid },
+        where: filter,
         populate: {
           createdBy: true,
           localizations: true,
         },
       });
 
-      publishedId = await strapi.db.query(slug).findOne({
-        select: ["id", "vuid", "versionNumber", "createdAt"],
+      publishedIds = await strapi.db.query(slug).findMany({
+        select: ["id", "vuid", "versionNumber", "createdAt", "locale"],
         where: { vuid: data.vuid, publishedAt: { $notNull: true } },
       });
 
-      const latestVersion = _.maxBy(olderVersions, (v) => v.versionNumber);
+      if (data.locale || options?.plugins?.i18n?.locale) {
+        olderVersions.forEach(v => {
+          if (v.vuid) {
+            data.vuid = v.vuid;
+          }
+          if (v.locale) {
+            if (!localizedVersions[v.locale]) localizedVersions[v.locale] = [];
+            localizedVersions[v.locale].push(v);
+          }
+        });
+        currentLocalVersions = localizedVersions[data.locale] ?? [];
+      }
+
+      const latestVersion = _.maxBy(currentLocalVersions, (v) => v.versionNumber);
       const latestVersionNumber = latestVersion && latestVersion.versionNumber;
       data.versionNumber = (latestVersionNumber || 0) + 1;
 
@@ -49,7 +80,7 @@ module.exports = {
 
       data.updatedBy = user?.id;
 
-      if (!publishedId) {
+      if (!publishedIds) {
         await strapi.db.query(slug).updateMany({
           where: {
             id: {
@@ -62,8 +93,7 @@ module.exports = {
         });
       }
     }
-
-    data.versions = olderVersions.map((v) => v.id);
+    data.versions = currentLocalVersions.map((v) => v.id);
 
     // remove old ids
     const newData = createNewVersion(slug, data);
@@ -71,59 +101,40 @@ module.exports = {
     const result = await strapi.entityService.create(slug, {
       data: {
         ...newData,
+        locale: data.locale,
         publishedAt: null,
-        isVisibleInListView: !publishedId,
-      },
-      populate: {
-        localizations: true,
+        isVisibleInListView: !publishedIds,
       },
     });
 
-    // set same localization for all previous version
-    const attrName = singular(model.collectionName);
+    let localizations = [];
 
-    const allLocalizations = olderVersions.flatMap((olderVersion) => {
-      return olderVersion.localizations.map((item) => ({
-        id: item.id,
-        vuid: item.vuid,
-        locale: item.locale,
-      }));
-    });
-
-    const uniqueLocalizations = _.uniqBy(allLocalizations, "vuid");
-
-    const allVersionsWithoutLang = (
-      await strapi.db.query(slug).findMany({
-        where: { vuid: { $in: uniqueLocalizations.map((item) => item.vuid) } },
-        populate: {
-          createdBy: true,
-          localizations: true,
-        },
-      })
-    ).map((item) => item.id);
-
-    for (const entityId of allVersionsWithoutLang) {
-      await strapi.db.connection.raw(
-        `DELETE FROM ${model.collectionName}_localizations_links WHERE ${attrName}_id=${entityId} AND inv_${attrName}_id=${result.id}`
-      );
-
-      await strapi.db.connection.raw(
-        `INSERT INTO ${model.collectionName}_localizations_links VALUES (${entityId},${result.id})`
-      );
+    for (const key in localizedVersions) {
+      let pubId = publishedIds.filter(id => id.locale === key).pop();
+      if (pubId) {
+        localizations.push(pubId.id);
+      } else {
+        const latestLocVersion = _.maxBy(localizedVersions[key], (v) => v.versionNumber);
+        localizations.push(latestLocVersion.id)
+      }
     }
 
-    // set latest for all different localizations for latest
-
-    for (const localization of result.localizations) {
-      await strapi.db.connection.raw(
-        `UPDATE ${model.collectionName}_localizations_links SET inv_${attrName}_id=${result.id} WHERE ${attrName}_id=${localization.id}`
-      );
-    }
 
     for (const version of data.versions) {
       await strapi.db.connection.raw(
         `INSERT INTO ${model.collectionName}_versions_links VALUES (${version},${result.id})`
       );
+    }
+
+    for (const localId of localizations) {
+      if (localId !== data.id) {
+        await strapi.db.connection.raw(
+          `INSERT INTO ${model.collectionName}_localizations_links VALUES (${localId},${result.id})`
+        );
+        await strapi.db.connection.raw(
+          `INSERT INTO ${model.collectionName}_localizations_links VALUES (${result.id},${localId})`
+        );
+      }
     }
     return result;
   },
