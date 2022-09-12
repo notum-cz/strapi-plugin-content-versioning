@@ -38,115 +38,62 @@ module.exports = ({ env }) => ({
 
 ## 💾 Override Save Button (Optional)
 
-<details>
-  <summary>Click to see details ➕</summary>
-
 You have to use [patch-package](https://www.npmjs.com/package/patch-package) to make it work with native Save button. _(We are working closely with the core team to change this)._
 
 1. Install `patch-package`
    - `npm install patch-package` or `yarn add patch-package`
 2. Create folder `patches` in root of your project
-3. Add file `@strapi+admin+4.0.2.patch` with content below ⬇️
+3. Add file `@strapi+admin+4.1.12.patch` with content localed in this repository `patches/` ⬇️
 4. Add the line `"postinstall": "patch-package",` to the scripts section of the `package.json`
 5. Run `npm run postinstall`
 
-```
-diff --git a/node_modules/@strapi/admin/admin/src/content-manager/components/CollectionTypeFormWrapper/index.js b/node_modules/@strapi/admin/admin/src/content-manager/components/CollectionTypeFormWrapper/index.js
-index 6701309..393f616 100644
---- a/node_modules/@strapi/admin/admin/src/content-manager/components/CollectionTypeFormWrapper/index.js
-+++ b/node_modules/@strapi/admin/admin/src/content-manager/components/CollectionTypeFormWrapper/index.js
-@@ -247,9 +247,17 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
-     replace(redirectionLink);
-   }, [redirectionLink, replace]);
+If patch for your strapi version is missing, please let me know or add it as file in pull request. Thanks!
 
-+
-+  const currentContentTypeLayout = get(allLayoutData, ['contentType'], {});
-+
-+  const hasVersions = useMemo(() => {
-+    return get(currentContentTypeLayout, ['pluginOptions', 'versions', 'versioned'], false);
-+  }, [currentContentTypeLayout]);
-+
-+
-   const onPost = useCallback(
-     async (body, trackerProperty) => {
--      const endPoint = `${getRequestUrl(`collection-types/${slug}`)}${rawQuery}`;
-+      const endPoint = hasVersions ?  `/content-versioning/${slug}/save` : `${getRequestUrl(`collection-types/${slug}`)}${rawQuery}`;
+# <br> <br> ⚠️⚠️⚠️ Open call for help for an awesome plugin.
 
-       try {
-         // Show a loading button in the EditView/Header.js && lock the app => no navigation
-@@ -267,7 +275,13 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
-         // Enable navigation and remove loaders
-         dispatch(setStatus('resolved'));
+## <br> History
 
--        replace(`/content-manager/collectionType/${slug}/${data.id}${rawQuery}`);
-+        if (hasVersions) {
-+          replace({
-+            pathname: `/content-manager/collectionType/${slug}/${data.id}`,
-+          });
-+        } else {
-+          replace(`/content-manager/collectionType/${slug}/${data.id}${rawQuery}`);
-+        }
-       } catch (err) {
-         trackUsageRef.current('didNotCreateEntry', { error: err, trackerProperty });
-         displayErrors(err);
-@@ -303,14 +317,15 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
+We felt this is an important feature that did not seem so complex.
 
-   const onPut = useCallback(
-     async (body, trackerProperty) => {
--      const endPoint = getRequestUrl(`collection-types/${slug}/${id}`);
-+
-+      const endPoint = hasVersions ?  `/content-versioning/${slug}/save` : getRequestUrl(`collection-types/${slug}/${id}`);
+Therefore we rolled up our sleeves and got to work on it. We came up with **alpha quite fast** and were one the first ones to publish plugins in the new marketplace.
 
-       try {
-         trackUsageRef.current('willEditEntry', trackerProperty);
+## <br> The current state of the plugin
 
-         dispatch(setStatus('submit-pending'));
+<br> But then came the **early adopters** with more and **more complex data** structures and specific use cases that made our heads hurt.<br> <br>
 
--        const { data } = await axiosInstance.put(endPoint, body);
-+        const { data } = hasVersions ? await axiosInstance.post(endPoint, body) : await axiosInstance.put(endPoint, body);
+> We called in our top brains and made more improvements, things were still going great….
 
-         trackUsageRef.current('didEditEntry', { trackerProperty });
-         toggleNotification({
-@@ -321,6 +336,12 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
-         dispatch(submitSucceeded(cleanReceivedData(data)));
+# <br> BUT
 
-         dispatch(setStatus('resolved'));
-+
-+        if (hasVersions) {
-+          replace({
-+            pathname: `/content-manager/collectionType/${slug}/${data.id}`,
-+          });
-+        }
-       } catch (err) {
-         trackUsageRef.current('didNotEditEntry', { error: err, trackerProperty });
-         displayErrors(err);
-diff --git a/node_modules/@strapi/admin/admin/src/content-manager/components/EditViewDataManagerProvider/index.js b/node_modules/@strapi/admin/admin/src/content-manager/components/EditViewDataManagerProvider/index.js
-index aff6f07..c5d7b87 100644
---- a/node_modules/@strapi/admin/admin/src/content-manager/components/EditViewDataManagerProvider/index.js
-+++ b/node_modules/@strapi/admin/admin/src/content-manager/components/EditViewDataManagerProvider/index.js
-@@ -49,6 +49,10 @@ const EditViewDataManagerProvider = ({
-     return get(currentContentTypeLayout, ['options', 'draftAndPublish'], false);
-   }, [currentContentTypeLayout]);
+**BUT then we landed 2 amazing and very important projects.**
 
-+  const hasVersions = useMemo(() => {
-+    return get(currentContentTypeLayout, ['pluginOptions', 'versions', 'versioned'], false);
-+  }, [currentContentTypeLayout]);
-+
-   const shouldNotRunValidations = useMemo(() => {
-     return hasDraftAndPublish && !initialData.publishedAt;
-   }, [hasDraftAndPublish, initialData.publishedAt]);
-@@ -515,7 +519,7 @@ const EditViewDataManagerProvider = ({
-         ) : (
-           <>
-             <Prompt
--              when={!isEqual(modifiedData, initialData)}
-+              when={!hasVersions && !isEqual(modifiedData, initialData)}
-               message={formatMessage({ id: 'global.prompt.unsaved' })}
-             />
-             <form noValidate onSubmit={handleSubmit}>
-```
+Our focus went elsewhere and we left the plugin for some time without open-source love.
 
-</details>
+# <br> **Open call for help and** **a bit of warning:**
+
+This plugin is **really nice challenge for a senior developer** to really code and have some fun.
+
+<br> Our senior developer Martin, the main author, is also available to answer your questions.
+
+<br> Issues are coming and people are using it: take a look here [https://github.com/notum-cz/strapi-plugin-content-versioning/issues](https://github.com/notum-cz/strapi-plugin-content-versioning/issues)
+
+<br> This could be you. Making this plugin great again.
+
+# <br> <br> The future and possibilities
+
+We believe this plugin may be in the marketplace’s top 5 most used plugins. But for that to become a reality we need fellow developers that would help and take it to the place it deserves to be.<br><br>
+
+**_“Therefore this is an open call to all the companies as well as solo developers to help us with this plugin.“_**
+
+We will happily do PRs and answer your questions.
+
+# <br> Please contact us at info@notum.cz
+
+![](https://cdn-images-1.medium.com/max/1200/1*4KRSunIx8v3tcYHyxKSYXQ.jpeg)
+
+Us helping you with this STRAPI plugin
+
+<br> <br> <hr> <br>
 
 ## 🛣️ Road map
 
@@ -158,7 +105,7 @@ index aff6f07..c5d7b87 100644
 ## Know limitation
 
 - ✋ ⛔️ Not working with UID and unique fields
-- ✋ ⛔️ Not have i18n support 
+- ✋ ⛔️ Not have i18n support
 - ✋ ⛔️ Not working with relations
 
 ## 🐛 Bugs
@@ -181,7 +128,7 @@ Project owner: **Ondřej Janošík** <br>
 
 ✔️ We can help you develop custom STRAPI, web and mobile apps. <br>
 ✔️ With 100+ projects, open communication and great project management we have the tools to get your project across the finish line.<br>
-📅 If you want to discuss your Strapi project with our CEO, book a meeting [Book a free 15min Calendly ](https://bit.ly/3thyPFX)
+📅 If you want to discuss your Strapi project, text us at info@notum.cz
 
 ## Keywords
 
