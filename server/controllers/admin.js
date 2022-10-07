@@ -10,6 +10,6 @@ module.exports = {
 
     const { createVersion } = getService("core-api");
 
-    return await createVersion(slug, data, user);
+    return await createVersion(slug, data, user, ctx.request.query);
   },
 };

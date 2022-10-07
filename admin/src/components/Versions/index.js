@@ -8,15 +8,14 @@ import { Divider } from "@strapi/design-system/Divider";
 // import { TableLabel } from "@strapi/design-system/Text";
 import { Select, Option } from "@strapi/design-system/Select";
 import { Typography } from "@strapi/design-system/Typography";
-import { Flex } from "@strapi/design-system/Flex";
 import {
   useCMEditViewDataManager,
   useNotification,
 } from "@strapi/helper-plugin";
 import { Button } from "@strapi/design-system/Button";
-import { format, parseISO } from 'date-fns'
+import { format, parseISO } from "date-fns";
 
-import { request } from "@strapi/helper-plugin";
+import { request, useQueryParams } from "@strapi/helper-plugin";
 
 import { getTrad } from "../../utils";
 
@@ -40,11 +39,13 @@ const Versions = () => {
     return null;
   }
 
+  const [{ rawQuery }] = useQueryParams();
   const [data, setData] = useState([]);
   const [publishedVersion, setPublishedVersion] = useState(undefined);
 
   useEffect(() => {
     processVersions(modifiedData);
+    //console.log(rawQuery, modifiedData);
   }, [modifiedData]);
 
   const processVersions = useCallback(
@@ -108,13 +109,16 @@ const Versions = () => {
     } = modifiedData;
 
     try {
-      const result = await request(`/content-versioning/${slug}/save`, {
-        method: "POST",
-        body: {
-          ...newData,
-          id: id,
-        },
-      });
+      const result = await request(
+        `/content-versioning/${slug}/save${rawQuery}`,
+        {
+          method: "POST",
+          body: {
+            ...newData,
+            id: id,
+          },
+        }
+      );
 
       replace({
         search: location.search,
@@ -173,7 +177,10 @@ const Versions = () => {
             <div>
               <Typography variant="pi">{`v${publishedVersion.versionNumber}`}</Typography>{" "}
               <Typography variant="pi" color="Neutral600">
-                { format(parseISO(publishedVersion.publishedAt), "MMM d, yyyy HH:mm")}
+                {format(
+                  parseISO(publishedVersion.publishedAt),
+                  "MMM d, yyyy HH:mm"
+                )}
               </Typography>
             </div>
           </div>
@@ -225,9 +232,12 @@ const Versions = () => {
                     />
                   }
                 >
-                  {`${option.label} ${format(parseISO(option.createdAt), "MMM d, yyyy HH:mm")}`}
+                  {`${option.label} ${format(
+                    parseISO(option.createdAt),
+                    "MMM d, yyyy HH:mm"
+                  )}`}
                 </Option>
-              )
+              );
             })}
           </Select>
         )}
@@ -244,7 +254,10 @@ const Versions = () => {
           variant="secondary"
           fullWidth
           onClick={onSaveClick}
-          disabled={isCreatingEntry || isDuplicatingEntry}
+        /*
+      ! Enabled before working patch of save button
+      disabled={isCreatingEntry || isDuplicatingEntry}
+      */
         >
           {formatMessage({
             id: getTrad("containers.Edit.buttonSave"),

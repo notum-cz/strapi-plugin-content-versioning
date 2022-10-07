@@ -6,12 +6,19 @@ const { getService } = require("../utils");
 const { singular } = require("pluralize");
 
 module.exports = {
-  async createVersion(slug, data, user) {
+  async createVersion(slug, data, user, options) {
     const model = await strapi.getModel(slug);
+    const attrName = singular(model.collectionName);
 
     const { createNewVersion } = getService("content-types");
 
-    // setup data, get old version and new version number
+    // linking to relatedEntityId will be more complex
+    // do we need the 'plugins.i18n' option..?
+    const relatedEntityId = options?.plugins?.i18n?.relatedEntityId
+    if (options?.plugins?.i18n.locale) {
+      data.locale = options?.plugins?.i18n?.locale;
+    }
+
     let olderVersions = [];
     let publishedId = null;
 
@@ -30,7 +37,7 @@ module.exports = {
       });
 
       publishedId = await strapi.db.query(slug).findOne({
-        select: ["id", "vuid", "versionNumber", "createdAt"],
+        select: ["id", "vuid", "versionNumber", "createdAt", "locale"],
         where: { vuid: data.vuid, publishedAt: { $notNull: true } },
       });
 
@@ -46,9 +53,9 @@ module.exports = {
         // Fallback set logged user ID
         data.createdBy = user?.id;
       }
-
       data.updatedBy = user?.id;
 
+      // Hiding other localizations if no versions are published
       if (!publishedId) {
         await strapi.db.query(slug).updateMany({
           where: {
@@ -79,18 +86,18 @@ module.exports = {
       },
     });
 
-    // set same localization for all previous version
-    const attrName = singular(model.collectionName);
-
+    // Relinking latest versions
+    // TODO: publishing feature (export, helper for finding curren latest and/or published)
     const allLocalizations = olderVersions.flatMap((olderVersion) => {
       return olderVersion.localizations.map((item) => ({
         id: item.id,
         vuid: item.vuid,
         locale: item.locale,
       }));
-    });
+    }).concat(result.localizations); // maybe not neccesary!?
 
     const uniqueLocalizations = _.uniqBy(allLocalizations, "vuid");
+    const versionsByVuid = {};
 
     const allVersionsWithoutLang = (
       await strapi.db.query(slug).findMany({
@@ -100,29 +107,48 @@ module.exports = {
           localizations: true,
         },
       })
-    ).map((item) => item.id);
+    ).map((localeVersion) => {
+      if (!versionsByVuid[localeVersion.vuid]) versionsByVuid[localeVersion.vuid] = [];
 
-    for (const entityId of allVersionsWithoutLang) {
+      versionsByVuid[localeVersion.vuid].push({
+        id: localeVersion.id,
+        versionNumber: localeVersion.versionNumber,
+      })
+
+      return {
+        id: localeVersion.id,
+        vuid: localeVersion.vuid,
+      };
+    });
+
+
+    for (const entity of allVersionsWithoutLang) {
       await strapi.db.connection.raw(
-        `DELETE FROM ${model.collectionName}_localizations_links WHERE ${attrName}_id=${entityId} AND inv_${attrName}_id=${result.id}`
+        `DELETE FROM ${model.collectionName}_localizations_links WHERE ${attrName}_id=${entity.id}`
       );
 
-      await strapi.db.connection.raw(
-        `INSERT INTO ${model.collectionName}_localizations_links VALUES (${entityId},${result.id})`
-      );
-    }
+      // For each other locale find lastest and link it
+      // TODO: create version services for handling relinking (correctly remove entity and handle published versions)
+      for (const versionsVuid of Object.keys(versionsByVuid)) {
+        console.log(entity.vuid, versionsVuid);
+        if (entity.vuid === versionsVuid) {
+          continue;
+        }
+        const latestInLocale = _.maxBy(versionsByVuid[versionsVuid], (v) => v.versionNumber);
 
-    // set latest for all different localizations for latest
-
-    for (const localization of result.localizations) {
+        await strapi.db.connection.raw(
+          `INSERT INTO ${model.collectionName}_localizations_links VALUES (${entity.id},${latestInLocale.id})`
+        );
+      }
+      // Also link all to currently createdVersion of locale (solves multiple langs problem and first versions)
       await strapi.db.connection.raw(
-        `UPDATE ${model.collectionName}_localizations_links SET inv_${attrName}_id=${result.id} WHERE ${attrName}_id=${localization.id}`
+        `INSERT INTO ${model.collectionName}_localizations_links VALUES (${entity.id},${result.id})`
       );
     }
 
     for (const version of data.versions) {
       await strapi.db.connection.raw(
-        `INSERT INTO ${model.collectionName}_versions_links VALUES (${version},${result.id})`
+        `INSERT INTO ${model.collectionName}_versions_links VALUES (${version},${result.id}), (${result.id},${version})`
       );
     }
     return result;
