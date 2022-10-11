@@ -72,7 +72,7 @@ module.exports = {
     });
     for (const version of data.versions) {
       await strapi.db.connection.raw(
-        `INSERT INTO ${model.collectionName}_versions_links VALUES (${version},${result.id})`
+        `INSERT INTO ${model.collectionName}_versions_links (${model.info.singularName}_id, inv_${model.info.singularName}_id) VALUES (${version},${result.id})`
       );
     }
     return result;
