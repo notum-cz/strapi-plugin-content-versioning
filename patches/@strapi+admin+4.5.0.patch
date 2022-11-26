@@ -1,0 +1,89 @@
+diff --git a/node_modules/@strapi/admin/admin/src/content-manager/components/CollectionTypeFormWrapper/index.js b/node_modules/@strapi/admin/admin/src/content-manager/components/CollectionTypeFormWrapper/index.js
+index 9680070..d05e189 100644
+--- a/node_modules/@strapi/admin/admin/src/content-manager/components/CollectionTypeFormWrapper/index.js
++++ b/node_modules/@strapi/admin/admin/src/content-manager/components/CollectionTypeFormWrapper/index.js
+@@ -244,9 +244,14 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
+     replace(redirectionLink);
+   }, [redirectionLink, replace]);
+ 
++  const currentContentTypeLayout = get(allLayoutData, ['contentType'], {});
++  const hasVersions = useMemo(() => {
++    return get(currentContentTypeLayout, ['pluginOptions', 'versions', 'versioned'], false);
++  }, [currentContentTypeLayout]);
++
+   const onPost = useCallback(
+     async (body, trackerProperty) => {
+-      const endPoint = `${getRequestUrl(`collection-types/${slug}`)}${rawQuery}`;
++      const endPoint = hasVersions ? `/content-versioning/${slug}/save` : `${getRequestUrl(`collection-types/${slug}`)}${rawQuery}`;
+ 
+       try {
+         // Show a loading button in the EditView/Header.js && lock the app => no navigation
+@@ -270,7 +275,13 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
+         // Enable navigation and remove loaders
+         dispatch(setStatus('resolved'));
+ 
+-        replace(`/content-manager/collectionType/${slug}/${data.id}${rawQuery}`);
++        if (hasVersions) {
++          replace({
++            pathname: `/content-manager/collectionType/${slug}/${data.id}`,
++          });
++        } else {
++          replace(`/content-manager/collectionType/${slug}/${data.id}${rawQuery}`);
++        }
+ 
+         return Promise.resolve(data);
+       } catch (err) {
+@@ -347,14 +358,14 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
+ 
+   const onPut = useCallback(
+     async (body, trackerProperty) => {
+-      const endPoint = getRequestUrl(`collection-types/${slug}/${id}`);
++      const endPoint = hasVersions ? `/content-versioning/${slug}/save` : getRequestUrl(`collection-types/${slug}/${id}`);
+ 
+       try {
+         trackUsageRef.current('willEditEntry', trackerProperty);
+ 
+         dispatch(setStatus('submit-pending'));
+ 
+-        const { data } = await axiosInstance.put(endPoint, body);
++        const { data } = hasVersions ? await axiosInstance.post(endPoint, body) : await axiosInstance.put(endPoint, body);
+ 
+         trackUsageRef.current('didEditEntry', { trackerProperty });
+         toggleNotification({
+@@ -376,6 +387,12 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
+ 
+         dispatch(setStatus('resolved'));
+ 
++        if (hasVersions) {
++          replace({
++            pathname: `/content-manager/collectionType/${slug}/${data.id}`,
++          });
++        }
++
+         return Promise.reject(err);
+       }
+     },
+diff --git a/node_modules/@strapi/admin/admin/src/content-manager/components/EditViewDataManagerProvider/index.js b/node_modules/@strapi/admin/admin/src/content-manager/components/EditViewDataManagerProvider/index.js
+index 69eb374..2eae5ea 100644
+--- a/node_modules/@strapi/admin/admin/src/content-manager/components/EditViewDataManagerProvider/index.js
++++ b/node_modules/@strapi/admin/admin/src/content-manager/components/EditViewDataManagerProvider/index.js
+@@ -70,6 +70,10 @@ const EditViewDataManagerProvider = ({
+     return get(currentContentTypeLayout, ['options', 'draftAndPublish'], false);
+   }, [currentContentTypeLayout]);
+ 
++  const hasVersions = useMemo(() => {
++    return get(currentContentTypeLayout, ['pluginOptions', 'versions', 'versioned'], false);
++  }, [currentContentTypeLayout]);
++
+   const shouldNotRunValidations = useMemo(() => {
+     return hasDraftAndPublish && !initialData.publishedAt;
+   }, [hasDraftAndPublish, initialData.publishedAt]);
+@@ -606,7 +610,7 @@ const EditViewDataManagerProvider = ({
+       ) : (
+         <>
+           <Prompt
+-            when={!isEqual(modifiedData, initialData)}
++            when={!hasVersions && !isEqual(modifiedData, initialData)}
+             message={formatMessage({ id: 'global.prompt.unsaved' })}
+           />
+           <form noValidate onSubmit={handleSubmit}>
