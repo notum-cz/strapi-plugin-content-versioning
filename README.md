@@ -87,7 +87,7 @@ We believe this plugin may be in the marketplace’s top 5 most used plugins. Bu
 
 We will happily do PRs and answer your questions.
 
-# <br> Please contact us at info@notum.cz
+# <br> Please contact us at sales@notum.cz
 
 ![](https://cdn-images-1.medium.com/max/1200/1*4KRSunIx8v3tcYHyxKSYXQ.jpeg)
 
