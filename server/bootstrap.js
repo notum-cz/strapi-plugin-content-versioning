@@ -51,10 +51,13 @@ const registerModelsHooks = () => {
     strapi.db.lifecycles.subscribe({
       models: versionedModelUIDs,
       async beforeCreate(event) {
-        getService("lifecycles").beforeCreate(event);
+        await getService("lifecycles").beforeCreate(event);
       },
       async beforeUpdate(event) {
         await getService("lifecycles").beforeUpdate(event);
+      },
+      async beforeDelete(event) {
+        await getService("lifecycles").beforeDelete(event);
       },
     });
   }
