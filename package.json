@@ -3,9 +3,9 @@
   "version": "0.4.7",
   "description": "This plugin enables content versioning",
   "license": "SEE LICENSE IN LICENSE",
-  "author": "Notum Technologies s.r.o. <info@notum.cz> (https://notum.cz/en/strapi)",
+  "author": "Notum Technologies s.r.o. <sales@notum.cz> (https://notum.cz/en/strapi)",
   "maintainers": [
-    "Notum Technologies s.r.o. <info@notum.cz> (https://notum.cz/en/strapi)",
+    "Notum Technologies s.r.o. <sales@notum.cz> (https://notum.cz/en/strapi)",
     "Martin Čapek <martin.capek@notum.cz> (https://notum.cz/en/strapi)"
   ],
   "dependencies": {

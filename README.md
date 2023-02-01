@@ -87,7 +87,7 @@ We believe this plugin may be in the marketplace’s top 5 most used plugins. Bu
 
 We will happily do PRs and answer your questions.
 
-# <br> Please contact us at info@notum.cz
+# <br> Please contact us at sales@notum.cz
 
 ![](https://cdn-images-1.medium.com/max/1200/1*4KRSunIx8v3tcYHyxKSYXQ.jpeg)
 
@@ -128,7 +128,7 @@ Project owner: **Ondřej Janošík** <br>
 
 ✔️ We can help you develop custom STRAPI, web and mobile apps. <br>
 ✔️ With 100+ projects, open communication and great project management we have the tools to get your project across the finish line.<br>
-📅 If you want to discuss your Strapi project, text us at info@notum.cz
+📅 If you want to discuss your Strapi project, text us at sales@notum.cz
 
 ## Keywords
 
