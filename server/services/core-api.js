@@ -73,7 +73,7 @@ module.exports = {
       }
     }
 
-    if (hasPublishedVersion) {
+    if (!data.publishedAt && hasPublishedVersion) {
       data.isVisibleInListView = false;
     } else {
       data.isVisibleInListView = true;
@@ -84,6 +84,7 @@ module.exports = {
         },
         data: {
           isVisibleInListView: false,
+          publishedAt: null
         },
       });
     }
@@ -95,12 +96,7 @@ module.exports = {
     // remove old ids
     const newData = createNewVersion(slug, data);
     // Create Version
-    const result = await strapi.entityService.create(slug, {
-      data: {
-        ...newData,
-        publishedAt: null,
-      }
-    });
+    const result = await strapi.entityService.create(slug, { data: newData });
 
     // Relink all versions from other locales if result is The latest(published)!
     if (result.isVisibleInListView) {

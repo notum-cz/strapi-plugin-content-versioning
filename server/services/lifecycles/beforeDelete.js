@@ -17,7 +17,7 @@ const beforeDelete = async (event) => {
         $ne: item.id,
       }
     },
-    sort: [{ publishedAt: 'desc' }, { version: 'desc' }],
+    sort: [{ publishedAt: 'desc' }, { versionNumber: 'desc' }],
     data: {
       isVisibleInListView: true,
     },
