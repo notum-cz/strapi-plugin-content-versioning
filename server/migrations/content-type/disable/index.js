@@ -24,13 +24,14 @@ module.exports = async ({ oldContentTypes, contentTypes }) => {
     ) {
       const model = strapi.getModel(uid);
 
-      const selectedLastVersions = await strapi.db.connection.raw(
-        `SELECT id, vuid, version_number FROM ${model.collectionName} WHERE (vuid, version_number) IN (SELECT vuid, MAX(version_number) FROM ${model.collectionName} GROUP BY vuid)`
-      );
+      const selectedLastVersions = (await strapi.db.connection.raw(
+        `SELECT DISTINCT ON (vuid, locale) id, locale, version_number, published_at FROM ${model.collectionName}
+        ORDER BY vuid, locale, published_at DESC NULLS LAST, version_number DESC`
+      ));
 
       const idsToKeep = selectedLastVersions?.rows?.map((r) => r.id) || [];
 
-      await strapi.db.query(uid).delete({
+      await strapi.db.query(uid).deleteMany({
         where: {
           id: {
             $notIn: idsToKeep,

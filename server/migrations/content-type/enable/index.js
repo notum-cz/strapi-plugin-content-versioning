@@ -18,19 +18,37 @@ module.exports = async ({ oldContentTypes, contentTypes }) => {
 
     const oldContentType = oldContentTypes[uid];
     const contentType = contentTypes[uid];
+    const vuids = {}
 
     if (
       !isVersionedContentType(oldContentType) &&
       isVersionedContentType(contentType)
     ) {
-      const ids = (await strapi.db.query(uid).findMany({ select: "id" })).map(
-        (item) => item.id
-      );
+      const entities = (await strapi.db.query(uid).findMany({
+        populate: {
+          localizations: true,
+        }
+      }))
 
-      for (const id of ids) {
-        await strapi.db
-          .query(uid)
-          .update({ where: { id }, data: { versionNumber: 1, vuid: uuid(), isVisibleInListView: true } });
+      for (const entity of entities) {
+        const allWithVuid = Object.values(vuids).flat()
+        const localizationsIds = entity.localizations?.map(({ id }) => id) ?? []
+
+        if (!entity.vuid && !allWithVuid.includes(entity.id)) {
+          const localeVuid = uuid();
+          vuids[localeVuid] = [entity.id, ...localizationsIds]
+
+          await strapi.db
+            .query(uid)
+            .updateMany({
+              where: { id: { $in: vuids[localeVuid] } },
+              data: {
+                versionNumber: 1,
+                vuid: localeVuid,
+                isVisibleInListView: true
+              }
+            });
+        }
       }
     }
   }
