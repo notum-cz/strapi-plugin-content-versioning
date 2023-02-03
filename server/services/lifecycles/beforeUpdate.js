@@ -65,6 +65,7 @@ const beforeUpdate = async (event) => {
 
       const latestIds = Object.values(_.omit(latestByLocale, entity.locale))
       const sqlValues = latestIds.map((latest) => `(${entity.id}, ${latest})`)
+      if (!sqlValues?.length) continue;
 
       await strapi.db.connection.raw(
         `INSERT INTO ${collectionName}_localizations_links (${attrName}_id, inv_${attrName}_id) VALUES ` + sqlValues.join(",")

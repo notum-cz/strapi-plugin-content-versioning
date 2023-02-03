@@ -121,7 +121,7 @@ module.exports = {
 
         const latestIds = Object.values(_.omit(latestByLocale, entity.locale))
         const sqlValues = latestIds.map((latest) => `(${entity.id}, ${latest})`)
-        // console.log(entity, latestIds);
+        if (!sqlValues?.length) continue;
 
         await strapi.db.connection.raw(
           `INSERT INTO ${collectionName}_localizations_links (${attrName}_id, inv_${attrName}_id) VALUES ` + sqlValues.join(",")
