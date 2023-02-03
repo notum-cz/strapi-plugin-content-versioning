@@ -1,8 +1,8 @@
 diff --git a/node_modules/@strapi/admin/admin/src/content-manager/components/CollectionTypeFormWrapper/index.js b/node_modules/@strapi/admin/admin/src/content-manager/components/CollectionTypeFormWrapper/index.js
-index 9680070..8b19647 100644
+index 9680070..4db1b2a 100644
 --- a/node_modules/@strapi/admin/admin/src/content-manager/components/CollectionTypeFormWrapper/index.js
 +++ b/node_modules/@strapi/admin/admin/src/content-manager/components/CollectionTypeFormWrapper/index.js
-@@ -244,9 +244,14 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
+@@ -244,14 +244,23 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
      replace(redirectionLink);
    }, [redirectionLink, replace]);
  
@@ -18,7 +18,16 @@ index 9680070..8b19647 100644
  
        try {
          // Show a loading button in the EditView/Header.js && lock the app => no navigation
-@@ -270,7 +275,13 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
+         dispatch(setStatus('submit-pending'));
+ 
++        if (hasVersions) {
++          body.isDuplicatingEntry = isCreatingEntry && !!origin
++        }
++
+         const { data } = await axiosInstance.post(endPoint, body);
+ 
+         trackUsageRef.current('didCreateEntry', trackerProperty);
+@@ -270,7 +279,13 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
          // Enable navigation and remove loaders
          dispatch(setStatus('resolved'));
  
@@ -33,7 +42,7 @@ index 9680070..8b19647 100644
  
          return Promise.resolve(data);
        } catch (err) {
-@@ -347,14 +358,14 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
+@@ -347,14 +362,14 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
  
    const onPut = useCallback(
      async (body, trackerProperty) => {
@@ -50,7 +59,7 @@ index 9680070..8b19647 100644
  
          trackUsageRef.current('didEditEntry', { trackerProperty });
          toggleNotification({
-@@ -369,6 +380,12 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
+@@ -369,6 +384,12 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
  
          dispatch(setStatus('resolved'));
  
@@ -64,7 +73,7 @@ index 9680070..8b19647 100644
        } catch (err) {
          trackUsageRef.current('didNotEditEntry', { error: err, trackerProperty });
 diff --git a/node_modules/@strapi/admin/admin/src/content-manager/components/EditViewDataManagerProvider/index.js b/node_modules/@strapi/admin/admin/src/content-manager/components/EditViewDataManagerProvider/index.js
-index 105a3c8..3b90ceb 100644
+index 105a3c8..0f414d9 100644
 --- a/node_modules/@strapi/admin/admin/src/content-manager/components/EditViewDataManagerProvider/index.js
 +++ b/node_modules/@strapi/admin/admin/src/content-manager/components/EditViewDataManagerProvider/index.js
 @@ -80,6 +80,10 @@ const EditViewDataManagerProvider = ({
