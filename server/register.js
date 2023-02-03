@@ -59,6 +59,14 @@ const extendVersionedContentTypes = (strapi) => {
         default: 1,
       });
 
+      _.set(attributes, "versionComment", {
+        writable: true,
+        private: false,
+        configurable: false,
+        visible: false,
+        type: "string",
+      });
+
       _.set(attributes, "isVisibleInListView", {
         writable: true,
         private: false,
