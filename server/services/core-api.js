@@ -2,13 +2,14 @@
 
 const { v4: uuid } = require("uuid");
 const _ = require("lodash");
-const { getService } = require("../utils");
+const { getService, getLatestRawQuery, isLocalizedContentType } = require("../utils");
 
 module.exports = {
   async createVersion(slug, data, user, options) {
     const { createNewVersion } = getService("content-types");
 
     const model = await strapi.getModel(slug);
+    const isLocalized = isLocalizedContentType(model)
     const attrName = _.snakeCase(model.info.singularName)
     const collectionName = _.snakeCase(model.collectionName)
 
@@ -36,8 +37,11 @@ module.exports = {
       data.createdBy = user?.id;
     } else {
       // New version or locale
+      const where = { vuid: data.vuid }
+      if (isLocalized) where.locale = data.locale
+
       olderVersions = await strapi.db.query(slug).findMany({
-        where: { vuid: data.vuid, locale: data.locale },
+        where,
         populate: {
           createdBy: true
         },
@@ -59,14 +63,12 @@ module.exports = {
       data.updatedBy = user?.id;
 
       // Select latest(or published) for each locale
-      const latestInLocales = (await strapi.db.connection.raw(
-        `SELECT DISTINCT ON (locale) id, locale, version_number, published_at FROM ${collectionName}
-        WHERE vuid='${data.vuid}'
-        ORDER BY locale, published_at DESC NULLS LAST, version_number DESC`
-      ))
+      const latestQuery = getLatestRawQuery(model, data.vuid)
+      const latestInLocales = await strapi.db.connection.raw(latestQuery)
+
       for (const latest of latestInLocales.rows) {
         // Is version the new latest in locale?
-        if (data.locale == latest.locale) {
+        if (!isLocalized || data.locale == latest.locale) {
           hasPublishedVersion = !!latest.published_at
         }
         latestByLocale[latest.locale] = latest.id
@@ -77,11 +79,12 @@ module.exports = {
       data.isVisibleInListView = false;
     } else {
       data.isVisibleInListView = true;
+
+      const where = { vuid: data.vuid }
+      if (isLocalized) where.locale = data.locale
+
       await strapi.db.query(slug).updateMany({
-        where: {
-          vuid: data.vuid,
-          locale: data.locale
-        },
+        where,
         data: {
           isVisibleInListView: false,
           publishedAt: null
@@ -90,8 +93,11 @@ module.exports = {
     }
 
     data.versions = olderVersions.map((v) => v.id);
-    // omit current locale 
-    data.localizations = Object.values(_.omit(latestByLocale, data.locale));
+
+    if (isLocalized) {
+      // omit current locale 
+      data.localizations = Object.values(_.omit(latestByLocale, data.locale));
+    }
 
     // remove old ids
     const newData = createNewVersion(slug, data);
@@ -99,7 +105,7 @@ module.exports = {
     const result = await strapi.entityService.create(slug, { data: newData });
 
     // Relink all versions from other locales if result is The latest(published)!
-    if (result.isVisibleInListView) {
+    if (result.isVisibleInListView && isLocalized) {
       // !set the current as latest in locale
       latestByLocale[result.locale] = result.id
 
