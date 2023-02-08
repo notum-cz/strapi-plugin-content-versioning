@@ -1,25 +1,8 @@
 diff --git a/node_modules/@strapi/admin/admin/src/content-manager/components/CollectionTypeFormWrapper/index.js b/node_modules/@strapi/admin/admin/src/content-manager/components/CollectionTypeFormWrapper/index.js
-index 9680070..b0590ef 100644
+index 9680070..4db1b2a 100644
 --- a/node_modules/@strapi/admin/admin/src/content-manager/components/CollectionTypeFormWrapper/index.js
 +++ b/node_modules/@strapi/admin/admin/src/content-manager/components/CollectionTypeFormWrapper/index.js
-@@ -33,6 +33,7 @@ import {
- } from '../../sharedReducers/crudReducer/actions';
- import selectCrudReducer from '../../sharedReducers/crudReducer/selectors';
- 
-+
- // This container is used to handle the CRUD
- const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }) => {
-   const queryClient = useQueryClient();
-@@ -174,7 +175,7 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
-     };
- 
-     if (!isMounted.current) {
--      return () => {};
-+      return () => { };
-     }
- 
-     if (requestURL) {
-@@ -244,14 +245,22 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
+@@ -244,14 +244,23 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
      replace(redirectionLink);
    }, [redirectionLink, replace]);
  
@@ -36,19 +19,19 @@ index 9680070..b0590ef 100644
        try {
          // Show a loading button in the EditView/Header.js && lock the app => no navigation
          dispatch(setStatus('submit-pending'));
-         
+ 
 +        if (hasVersions) {
 +          body.isDuplicatingEntry = isCreatingEntry && !!origin
 +        }
++
          const { data } = await axiosInstance.post(endPoint, body);
  
          trackUsageRef.current('didCreateEntry', trackerProperty);
-@@ -270,7 +279,14 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
+@@ -270,7 +279,13 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
          // Enable navigation and remove loaders
          dispatch(setStatus('resolved'));
  
 -        replace(`/content-manager/collectionType/${slug}/${data.id}${rawQuery}`);
-+
 +        if (hasVersions) {
 +          replace({
 +            pathname: `/content-manager/collectionType/${slug}/${data.id}`,
@@ -59,7 +42,7 @@ index 9680070..b0590ef 100644
  
          return Promise.resolve(data);
        } catch (err) {
-@@ -347,14 +363,14 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
+@@ -347,14 +362,14 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
  
    const onPut = useCallback(
      async (body, trackerProperty) => {
@@ -76,7 +59,7 @@ index 9680070..b0590ef 100644
  
          trackUsageRef.current('didEditEntry', { trackerProperty });
          toggleNotification({
-@@ -369,6 +385,12 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
+@@ -369,6 +384,12 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
  
          dispatch(setStatus('resolved'));
  
@@ -84,13 +67,13 @@ index 9680070..b0590ef 100644
 +          replace({
 +            pathname: `/content-manager/collectionType/${slug}/${data.id}`,
 +          });
-+        }
++        } 
 +
          return Promise.resolve(data);
        } catch (err) {
          trackUsageRef.current('didNotEditEntry', { error: err, trackerProperty });
 diff --git a/node_modules/@strapi/admin/admin/src/content-manager/components/EditViewDataManagerProvider/index.js b/node_modules/@strapi/admin/admin/src/content-manager/components/EditViewDataManagerProvider/index.js
-index a0bdd47..1d0a313 100644
+index 105a3c8..0f414d9 100644
 --- a/node_modules/@strapi/admin/admin/src/content-manager/components/EditViewDataManagerProvider/index.js
 +++ b/node_modules/@strapi/admin/admin/src/content-manager/components/EditViewDataManagerProvider/index.js
 @@ -80,6 +80,10 @@ const EditViewDataManagerProvider = ({
@@ -104,7 +87,7 @@ index a0bdd47..1d0a313 100644
    const shouldNotRunValidations = useMemo(() => {
      return hasDraftAndPublish && !initialData.publishedAt;
    }, [hasDraftAndPublish, initialData.publishedAt]);
-@@ -642,7 +646,7 @@ const EditViewDataManagerProvider = ({
+@@ -667,7 +671,7 @@ const EditViewDataManagerProvider = ({
        ) : (
          <>
            <Prompt

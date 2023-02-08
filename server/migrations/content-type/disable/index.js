@@ -1,6 +1,6 @@
 "use strict";
 
-const { getService } = require("../../../utils");
+const { getService, getLatestRawQuery } = require("../../../utils");
 
 // Disable versioning on CT -> Delete all older versions of entities
 module.exports = async ({ oldContentTypes, contentTypes }) => {
@@ -24,13 +24,12 @@ module.exports = async ({ oldContentTypes, contentTypes }) => {
     ) {
       const model = strapi.getModel(uid);
 
-      const selectedLastVersions = await strapi.db.connection.raw(
-        `SELECT id, vuid, version_number FROM ${model.collectionName} WHERE (vuid, version_number) IN (SELECT vuid, MAX(version_number) FROM ${model.collectionName} GROUP BY vuid)`
-      );
+      const latestQuery = getLatestRawQuery(model)
+      const selectedLastVersions = await strapi.db.connection.raw(latestQuery)
 
       const idsToKeep = selectedLastVersions?.rows?.map((r) => r.id) || [];
 
-      await strapi.db.query(uid).delete({
+      await strapi.db.query(uid).deleteMany({
         where: {
           id: {
             $notIn: idsToKeep,

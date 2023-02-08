@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import _ from "lodash";
 import { useIntl } from "react-intl";
 import { Box } from "@strapi/design-system/Box";
@@ -8,21 +8,22 @@ import { Divider } from "@strapi/design-system/Divider";
 // import { TableLabel } from "@strapi/design-system/Text";
 import { Select, Option } from "@strapi/design-system/Select";
 import { Typography } from "@strapi/design-system/Typography";
-import { Flex } from "@strapi/design-system/Flex";
 import {
   useCMEditViewDataManager,
   useNotification,
 } from "@strapi/helper-plugin";
 import { Button } from "@strapi/design-system/Button";
-import { format, parseISO } from 'date-fns'
+import { format, parseISO } from "date-fns";
 
-import { request } from "@strapi/helper-plugin";
+import { request, useQueryParams } from "@strapi/helper-plugin";
 
 import { getTrad } from "../../utils";
 
 const Versions = () => {
   const { formatMessage } = useIntl();
   const { push, replace } = useHistory();
+  const location = useLocation();
+
   const {
     initialData,
     modifiedData,
@@ -38,11 +39,13 @@ const Versions = () => {
     return null;
   }
 
+  const [{ rawQuery }] = useQueryParams();
   const [data, setData] = useState([]);
   const [publishedVersion, setPublishedVersion] = useState(undefined);
 
   useEffect(() => {
     processVersions(modifiedData);
+    //console.log(rawQuery, modifiedData);
   }, [modifiedData]);
 
   const processVersions = useCallback(
@@ -87,6 +90,7 @@ const Versions = () => {
       const selectedVersion = data.find((v) => v.versionNumber === value);
 
       push({
+        search: location.search,
         pathname: `/content-manager/collectionType/${slug}/${selectedVersion.id}`,
       });
     },
@@ -105,12 +109,19 @@ const Versions = () => {
     } = modifiedData;
 
     try {
-      const result = await request(`/content-versioning/${slug}/save`, {
-        method: "POST",
-        body: newData,
-      });
+      const result = await request(
+        `/content-versioning/${slug}/save${rawQuery}`,
+        {
+          method: "POST",
+          body: {
+            ...newData,
+            id: id,
+          },
+        }
+      );
 
       replace({
+        search: location.search,
         pathname: `/content-manager/collectionType/${slug}/${result.id}`,
       });
     } catch (e) {
@@ -166,7 +177,10 @@ const Versions = () => {
             <div>
               <Typography variant="pi">{`v${publishedVersion.versionNumber}`}</Typography>{" "}
               <Typography variant="pi" color="Neutral600">
-                { format(parseISO(publishedVersion.publishedAt), "MMM d, yyyy HH:mm")}
+                {format(
+                  parseISO(publishedVersion.publishedAt),
+                  "MMM d, yyyy HH:mm"
+                )}
               </Typography>
             </div>
           </div>
@@ -218,9 +232,12 @@ const Versions = () => {
                     />
                   }
                 >
-                  {`${option.label} ${format(parseISO(option.createdAt), "MMM d, yyyy HH:mm")}`}
+                  {`${option.label} ${format(
+                    parseISO(option.createdAt),
+                    "MMM d, yyyy HH:mm"
+                  )}`}
                 </Option>
-              )
+              );
             })}
           </Select>
         )}
@@ -233,7 +250,15 @@ const Versions = () => {
             })}
           </Button>
         )} */}
-        <Button variant="secondary" fullWidth onClick={onSaveClick}>
+        <Button
+          variant="secondary"
+          fullWidth
+          onClick={onSaveClick}
+        /*
+      ! Enabled before working patch of save button
+      disabled={isCreatingEntry || isDuplicatingEntry}
+      */
+        >
           {formatMessage({
             id: getTrad("containers.Edit.buttonSave"),
             defaultMessage: "Save new version",

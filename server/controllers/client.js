@@ -1,6 +1,6 @@
-'use strict';
+"use strict";
 
-const { getService } = require('../utils');
+const { getService } = require("../utils");
 
 module.exports = {
   async create(ctx) {
@@ -15,7 +15,7 @@ module.exports = {
     data.createdAt = now;
     data.updatedAt = now;
 
-    const { createVersion } = getService('core-api');
+    const { createVersion } = getService("core-api");
 
     const newData = {
       ...data,
@@ -30,7 +30,7 @@ module.exports = {
     const { slug } = params;
     const { user } = state;
 
-    const { findAllForUser } = getService('core-api');
+    const { findAllForUser } = getService("core-api");
 
     return await findAllForUser(slug, user);
   },
