@@ -1,6 +1,9 @@
 # Strapi Plugin-Content-Versioning
 
+**⚠️⚠️⚠️**: i18n currently in **beta** stage.
+
 **⚠️⚠️⚠️**: Currently a **beta.** <br> We are using it in production (but still working on it ☀️🌙).
+
 
 ### A Strapi plugin for managing versions of your content.
 
@@ -105,7 +108,6 @@ Us helping you with this STRAPI plugin
 ## Know limitation
 
 - ✋ ⛔️ Not working with UID and unique fields
-- ✋ ⛔️ Not have i18n support
 - ✋ ⛔️ Not working with relations
 
 ## 🐛 Bugs
@@ -115,8 +117,9 @@ If you want to help us you would be a rock ⭐.
 
 ## 🧔 Authors
 
-The main star: **Martin Čapek** https://github.com/martincapek <br>
-Tech problem solver: **Tomáš Novotný** <br>
+The main star: **Filip Janko** <br>
+Tech problem solver #1: **Martin Čapek** https://github.com/martincapek <br>
+Tech problem solver #2: **Tomáš Novotný** <br>
 Project owner: **Ondřej Janošík** <br>
 
 #### 🚀 Created with passion by [Notum Technologies](https://notum.cz/en)
