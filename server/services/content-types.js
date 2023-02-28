@@ -126,6 +126,12 @@ const getVersionedAttributes = (model) => {
 
 const createNewVersion = (modelUid, oldVersion) => {
   const modelDef = strapi.getModel(modelUid);
+  // Remove timestamps
+  ["createdAt", "updatedAt", "publishedAt"].forEach((ts) => {
+    if (oldVersion[ts]) {
+      delete oldVersion[ts];
+    }
+  })
 
   return removeIds(modelDef)(oldVersion);
 };
