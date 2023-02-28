@@ -1,11 +1,11 @@
 'use strict';
 
-const { has, get, omit, isArray } = require('lodash/fp');
+const { has, get, omit, isArray, lowerCase, startCase } = require('lodash/fp');
 const { ApplicationError } = require('@strapi/utils').errors;
 const { transformParamsToQuery } = require('@strapi/utils').convertQueryParams;
-const { getService } = require('../utils');
+const { getService, isLocalizedContentType } = require('../utils');
 
-const LOCALE_QUERY_FILTER = 'locale';
+const VERSIONS_QUERY_FILTER = 'versions';
 const SINGLE_ENTRY_ACTIONS = ['findOne', 'update', 'delete'];
 const BULK_ACTIONS = ['delete'];
 
@@ -55,12 +55,48 @@ const wrapParams = async (params = {}, ctx = {}) => {
     };
 };
 
+// TODO: Test query efficiency for larger datasets
+const findLatestInLocale = async (model, fields) => {
+    const where = ['vuid=a.vuid'];
 
-const findLatestInLocale = (await strapi.db.connection.raw(
-    `SELECT DISTINCT ON (locale) id, locale, version_number, published_at FROM ${collectionName}
-      WHERE vuid='${item.vuid}' AND id!='${item.id}' 
-      ORDER BY locale, published_at DESC NULLS LAST, version_number DESC`
-  ))
+    const mapColumnToField = {}
+    const cols = fields.map((field) => {
+        const dbColumn = `${startCase(field).split(' ').map(lowerCase).join('_')}`;
+        mapColumnToField[dbColumn] = field;
+        return 'a.' + dbColumn;
+    });
+
+    // TODO: Localizations also apply decorator which strips all except main locale entity
+    //  $and: [{ locale: await getDefaultLocale() }].concat(params.filters || []),
+    if (isLocalizedContentType(model)) {
+        cols.push('a.locale');
+        where.push('locale=a.locale');
+    }
+    const rawQuery = `SELECT ${cols.join(', ')} 
+        FROM ${model.collectionName} a WHERE NOT EXISTS (
+            SELECT 1 FROM ${model.collectionName} WHERE ${where.join(' AND ')} AND (
+                CASE WHEN a.published_at is null THEN (
+                    published_at is not null OR version_number > a.version_number
+                )
+                ELSE published_at is not null AND version_number > a.version_number
+                END
+            )
+        )`
+
+    const result = await strapi.db.connection.raw(rawQuery);
+    if (result?.rows) {
+        return result?.rows.map((row) => {
+            const entity = {}
+            for (const col in mapColumnToField) {
+                entity[mapColumnToField[col]] = row[col] ?? null
+            }
+            return entity;
+        })
+    }
+    return []
+}
+
+
 
 
 /**
@@ -78,24 +114,11 @@ const decorator = (service) => ({
     async wrapParams(params = {}, ctx = {}) {
         const wrappedParams = await service.wrapParams.call(this, params, ctx);
 
-        const model = strapi.getModel(ctx.uid);
-
-        const { isLocalizedContentType } = getService('content-types');
-
-        if (!isLocalizedContentType(model)) {
-            return wrappedParams;
-        }
-
-        return wrapParams(params, ctx);
+        return wrappedParams;
     },
 
 
-    /**
-     * Find an entry or several if fetching all locales
-     * @param {string} uid - Model uid
-     * @param {object} opts - Query options object (params, data, files, populate)
-     */
-    async findMany(uid, opts = {}) {
+    async findPage(uid, opts = {}) {
         const model = strapi.getModel(uid);
 
         const { isVersionedContentType } = getService('content-types');
@@ -105,21 +128,30 @@ const decorator = (service) => ({
         }
 
         const { kind } = strapi.getModel(uid);
-        console.log({kind});
 
-        const wrappedParams = await this.wrapParams(opts, { uid, action: 'findMany' });
+        const wrappedParams = await this.wrapParams(opts, { uid, action: 'findPage' });
+        console.log(wrappedParams);
 
-        const query = transformParamsToQuery(uid, wrappedParams);
-
-        if (kind === 'singleType') {
-            if (opts[LOCALE_QUERY_FILTER] === 'all') {
-                return strapi.db.query(uid).findMany(query);
-            }
-            return strapi.db.query(uid).findOne(query);
+        if (kind === 'collectionType' && opts[VERSIONS_QUERY_FILTER] !== 'all') {
+            const results = await findLatestInLocale(model, wrappedParams.fields)
+            return {
+                results,
+                pagination: {
+                    page: 1,
+                    pageSize: 10,
+                    pageCount: 1,
+                    total: 3
+                }
+            };
         }
 
-        return strapi.db.query(uid).findMany(query);
-    },
+
+        // paggination decorate helpers!?
+        const query = transformParamsToQuery(uid, wrappedParams);
+        const data = strapi.db.query(uid).findMany(query);
+
+        return data;
+    }
 });
 
 module.exports = () => ({
