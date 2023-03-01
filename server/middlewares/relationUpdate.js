@@ -13,7 +13,7 @@ const _ = require("lodash");
 const relationUpdateMiddleware = async (ctx, next) => {
     const { model, id } = ctx.request.params
     const modelDef = strapi.getModel(model);
-    if (!getService("content-types").isVersionedContentType(modelDef)) {
+    if (!getService("content-types").isVersionedContentType(modelDef) || modelDef.__schema__.kind === "singleType") {
         return next();
     }
     // console.log(strapi.contentTypes); 
