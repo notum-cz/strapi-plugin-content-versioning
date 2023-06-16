@@ -5,6 +5,7 @@
   "containers.Edit.currentPublishedVersion": "Zveřejněná verze",
   "containers.Edit.buttonPreview": "Náhled",
   "containers.Edit.buttonSave": "Uložit jako novou verzi",
+  "containers.Edit.toggleComment": "Povolit komentář verze",
   "CheckboxConfirmation.Modal.body": "Přejete si jej deaktivovat?",
   "CheckboxConfirmation.Modal.button-confirm": "Ano, deaktivovat",
   "CheckboxConfirmation.Modal.content": "Deaktovováním verzování odstraníte všechny verze obsahu vyjma nejaktuálnějších verzí.",
