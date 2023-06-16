@@ -42,9 +42,16 @@ const beforeUpdate = async (event) => {
     // Relink logic for localizations
     if (isLocalized) {
       const latestInLocales = (await strapi.db.connection.raw(
-        `SELECT DISTINCT ON (locale) id, locale, version_number, published_at FROM ${collectionName}
-        WHERE vuid='${item.vuid}'
-        ORDER BY locale, published_at DESC NULLS LAST, version_number DESC`
+        `SELECT a.id, a.locale, a.version_number, a.published_at
+      FROM ${collectionName} a WHERE NOT EXISTS (
+        SELECT 1 FROM ${collectionName} WHERE locale=a.locale AND vuid=a.vuid AND (
+         CASE WHEN a.published_at is null THEN (
+           published_at is not null OR version_number > a.version_number
+        )
+        ELSE published_at is not null AND version_number > a.version_number
+        END
+        )
+      ) AND vuid = '${item.vuid}'`
       ))
       const latestByLocale = {};
       for (const latest of latestInLocales.rows) {
