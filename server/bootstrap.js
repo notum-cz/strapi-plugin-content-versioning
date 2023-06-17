@@ -5,6 +5,7 @@ const { getService } = require("./utils");
 module.exports = async ({ strapi }) => {
   // const { actions } = strapi.plugin(pluginId).service("permissions");
   const { actions } = getService("permissions");
+  const { decorator } = getService('entity-service-decorator');
 
   strapi.server.router.use(
     "/content-manager/collection-types/:model",
@@ -32,6 +33,9 @@ module.exports = async ({ strapi }) => {
       return next();
     }
   );
+
+  // Entity Service
+  strapi.entityService.decorate(decorator);
 
   // Actions
   await actions.registerVersionsActions();

@@ -8,6 +8,10 @@ import { Divider } from "@strapi/design-system/Divider";
 // import { TableLabel } from "@strapi/design-system/Text";
 import { Select, Option } from "@strapi/design-system/Select";
 import { Typography } from "@strapi/design-system/Typography";
+import { Flex } from "@strapi/design-system/Flex";
+import { Checkbox } from "@strapi/design-system/Checkbox";
+import { Textarea } from "@strapi/design-system/Textarea";
+
 import {
   useCMEditViewDataManager,
   useNotification,
@@ -32,6 +36,7 @@ const Versions = () => {
     hasDraftAndPublish,
     layout,
     isDuplicatingEntry,
+    onChange
   } = useCMEditViewDataManager();
   const toggleNotification = useNotification();
 
@@ -40,8 +45,13 @@ const Versions = () => {
   }
 
   const [{ rawQuery }] = useQueryParams();
+  const [hasComment, setHasComment] = useState(!!initialData?.versionComment);
   const [data, setData] = useState([]);
   const [publishedVersion, setPublishedVersion] = useState(undefined);
+
+  useEffect(() => {
+    setHasComment(!!initialData?.versionComment?.length)
+  }, [initialData]);
 
   useEffect(() => {
     processVersions(modifiedData);
@@ -242,6 +252,28 @@ const Versions = () => {
             })}
           </Select>
         )}
+
+        <Checkbox
+          onValueChange={(value) => {
+            setHasComment(value);
+            if (!value) {
+              onChange({ target: { name: 'versionComment', value: undefined, type: 'textarea' } })
+            }
+          }}
+          value={hasComment}
+          type="checkbox"
+        >
+          {formatMessage({
+            id: getTrad("containers.Edit.toggleComment"),
+            defaultMessage: "Save new version",
+          })}
+        </Checkbox>
+        {hasComment && (
+          <Textarea name="versionComment" onChange={(comment) => onChange(comment)}>
+            {modifiedData?.versionComment}
+          </Textarea>
+        )}
+
         {/* TODO: preview for FE app */}
         {/* {!isCreatingEntry && (
           <Button variant="secondary">
