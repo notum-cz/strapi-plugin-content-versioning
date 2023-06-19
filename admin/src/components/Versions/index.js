@@ -97,7 +97,8 @@ const Versions = () => {
         return;
       }
 
-      const selectedVersion = data.find((v) => v.versionNumber === value);
+      // fixed bug when version being iterated was not the same type as the version being selected (string != number)
+      const selectedVersion = data.find((v) => v.versionNumber === Number(value));
 
       push({
         search: location.search,
