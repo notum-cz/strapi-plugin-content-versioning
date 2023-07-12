@@ -56,7 +56,7 @@ module.exports = ({ env }) => ({
    yarn add patch-package
    ```
 2. Create folder `patches` in the root of your project
-3. Copy file `@strapi+admin+4.11.3.patch` located in  `patches/` of this repository to the folder created in the previous step
+3. Copy file `@strapi+admin+4.11.4.patch` located in  `patches/` of this repository to the folder created in the previous step
 4. Add the line `"postinstall": "patch-package",` to the scripts section of the `package.json`
 5. Run `npm run postinstall`
 
@@ -72,6 +72,7 @@ If a patch for your specific Strapi version is missing, please inform us or incl
 ## ⛔️ Known limitations
 
 - ✋  Not working with UID and unique fields
+- ✋  Not working with relations
 
 ## 🐛 Bugs
 
