@@ -1,18 +1,22 @@
-'use strict';
+"use strict";
 
+const { env } = require("@strapi/utils");
 const pluginId = require("../pluginId");
 
 const getCoreStore = () => {
-  return strapi.store({ type: 'plugin', name: pluginId });
+  return strapi.store({ type: "plugin", name: pluginId });
 };
 
 // retrieve a local service
-const getService = name => {
+const getService = (name) => {
   return strapi.plugin(pluginId).service(name);
 };
 
 const isLocalizedContentType = (model) => {
-  return strapi.plugin('i18n')?.service('content-types')?.isLocalizedContentType(model);
+  return strapi
+    .plugin("i18n")
+    ?.service("content-types")
+    ?.isLocalizedContentType(model);
 };
 
 const getLatestRawQuery = (model, vuid) => {
@@ -21,11 +25,11 @@ const getLatestRawQuery = (model, vuid) => {
   if (isLocalizedContentType(model)) {
     rawQuery = `SELECT a.id, a.locale, a.version_number, a.published_at
       FROM ${model.collectionName} a WHERE NOT EXISTS (
-      SELECT 1 FROM ${model.collectionName} WHERE locale=a.locale AND vuid=a.vuid AND`
+      SELECT 1 FROM ${model.collectionName} WHERE locale=a.locale AND vuid=a.vuid AND`;
   } else {
     rawQuery = `SELECT a.id, a.version_number, a.published_at
       FROM ${model.collectionName} a WHERE NOT EXISTS (
-      SELECT 1 FROM ${model.collectionName} WHERE vuid=a.vuid AND`
+      SELECT 1 FROM ${model.collectionName} WHERE vuid=a.vuid AND`;
   }
 
   rawQuery += ` (
@@ -35,7 +39,7 @@ const getLatestRawQuery = (model, vuid) => {
    ELSE published_at is not null AND version_number > a.version_number
    END
    )
- )`
+ )`;
 
   if (vuid) {
     rawQuery += ` AND vuid = '${vuid}'`;
@@ -44,9 +48,22 @@ const getLatestRawQuery = (model, vuid) => {
   return rawQuery;
 };
 
+const getLatestValueByDB = (latest) => {
+  const db = env("DATABASE_CLIENT");
+  switch (db) {
+    case "postgres":
+      return latest.rows;
+    case "mysql":
+      return latest[0];
+    default:
+      return latest;
+  }
+};
+
 module.exports = {
+  getLatestValueByDB,
   getService,
   getCoreStore,
   getLatestRawQuery,
-  isLocalizedContentType
+  isLocalizedContentType,
 };
