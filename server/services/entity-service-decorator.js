@@ -7,6 +7,7 @@ const {
   getLatestRawQuery,
 } = require("../utils");
 const _ = require("lodash");
+const { getLatestValueByDB } = require("../utils");
 
 const VERSIONS_QUERY_FILTER = "versions";
 
@@ -66,10 +67,8 @@ const decorator = (service) => ({
    * @param {object} ctx.model - Model that is being used
    */
   async wrapParams(params = {}, ctx = {}) {
-    console.log(ctx, "context");
     const { isVersionedContentType } = getService("content-types");
     const model = strapi.getModel(ctx.uid);
-
     const wrappedParams = await service.wrapParams.call(this, params, ctx);
 
     // Optional override with VERSIONS_QUERY_FILTER: 'all'
@@ -96,15 +95,27 @@ const decorator = (service) => ({
     const { isVersionedContentType } = getService("content-types");
     const model = strapi.getModel(uid);
     const isLocalized = isLocalizedContentType(model);
+    const { data } = opts;
     if (!isVersionedContentType(model)) {
       return service.create.call(this, uid, opts);
     }
-    const { data } = opts;
-    data.vuid = uuid();
-    data.versionNumber = 1;
-    data.isVisibleInListView = true;
+    if (isLocalized && data.localizations.length) {
+      const relatedLocaleItem = await strapi.db.query(uid).findOne({
+        where: {
+          id: data.localizations[0],
+        },
+        populate: {
+          createdBy: true,
+        },
+      });
+      data.vuid = relatedLocaleItem.vuid;
+    } else {
+      data.vuid = uuid();
+      data.versionNumber = 1;
+      data.isVisibleInListView = true;
+    }
+
     const entry = await service.create.call(this, uid, opts);
-    console.log(opts);
     return entry;
   },
   /**
@@ -113,13 +124,12 @@ const decorator = (service) => ({
    * @param {string} entityId
    * @param {object} opts - Query options object (params, data, files, populate)
    */
-  async update(uid, entityId, opts = {}, ctx) {
-    console.log(strapi.requestContext.get());
+  async update(uid, entityId, opts) {
     const { isVersionedContentType, createNewVersion } =
       getService("content-types");
     const model = strapi.getModel(uid);
     const { data } = opts;
-    console.log(opts);
+
     if (!isVersionedContentType(model) || data.hasOwnProperty("publishedAt")) {
       //Is not versioned content or is just publishing/unpublishing
       return service.update.call(this, uid, entityId, opts);
@@ -128,25 +138,18 @@ const decorator = (service) => ({
     const attrName = _.snakeCase(model.info.singularName);
     const collectionName = _.snakeCase(model.collectionName);
 
-    const relatedEntityId = opts?.plugins?.i18n?.relatedEntityId;
-    if (relatedEntityId) {
-      const relatedEntity = await strapi.db.query(uid).findOne({
-        select: ["id", "vuid", "locale"],
-        where: { id: relatedEntityId },
-      });
-      data.vuid = relatedEntity.vuid;
-    }
-    if (opts?.plugins?.i18n.locale) {
-      data.locale = opts?.plugins?.i18n?.locale;
-    }
-
+    const prevVersion = await strapi.db.query(uid).findOne({
+      where: {
+        id: entityId,
+      },
+    });
+    data.locale = prevVersion.locale;
     let hasPublishedVersion = false;
     let olderVersions = [];
     const latestByLocale = {};
 
     const where = { vuid: data.vuid };
-    // There is no locale in data
-    // if (isLocalized) where.locale = data.locale;
+    if (isLocalized) where.locale = data.locale;
 
     olderVersions = await strapi.db.query(uid).findMany({
       where,
@@ -172,7 +175,7 @@ const decorator = (service) => ({
     const latestQuery = getLatestRawQuery(model, data.vuid);
     const latestInLocales = await strapi.db.connection.raw(latestQuery);
 
-    for (const latest of latestInLocales) {
+    for (const latest of getLatestValueByDB(latestInLocales)) {
       // Is version the new latest in locale?
       if (!isLocalized || data.locale == latest.locale) {
         hasPublishedVersion = !!latest.published_at;
@@ -211,7 +214,6 @@ const decorator = (service) => ({
       ...opts,
       data: newData,
     });
-
     // Relink all versions from other locales if result is The latest(published)!
     if (result.isVisibleInListView && isLocalized) {
       // !set the current as latest in locale
@@ -258,7 +260,6 @@ const decorator = (service) => ({
    * @param {object} opts - Query options object (params, data, files, populate)
    */
   async findMany(uid, opts) {
-    console.log("find many triggered");
     return service.findMany.call(this, uid, opts);
   },
 });
