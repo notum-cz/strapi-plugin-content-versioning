@@ -1,6 +1,7 @@
 "use strict";
 const _ = require("lodash");
 const { isLocalizedContentType } = require("../../utils");
+const { getLatestValueByDB } = require("../../utils");
 
 const beforeUpdate = async (event) => {
   const { params } = event;
@@ -56,8 +57,7 @@ const beforeUpdate = async (event) => {
       ) AND vuid = '${item.vuid}'`
       );
       const latestByLocale = {};
-      console.log(latestInLocales);
-      for (const latest of latestInLocales) {
+      for (const latest of getLatestValueByDB(latestInLocales)) {
         latestByLocale[latest.locale] = latest.id;
       }
 

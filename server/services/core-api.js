@@ -7,6 +7,7 @@ const {
   getLatestRawQuery,
   isLocalizedContentType,
 } = require("../utils");
+const { getLatestValueByDB } = require("../utils");
 
 module.exports = {
   async createVersion(slug, data, user, options) {
@@ -70,7 +71,7 @@ module.exports = {
       const latestQuery = getLatestRawQuery(model, data.vuid);
       const latestInLocales = await strapi.db.connection.raw(latestQuery);
 
-      for (const latest of latestInLocales) {
+      for (const latest of getLatestValueByDB(latestInLocales)) {
         // Is version the new latest in locale?
         if (!isLocalized || data.locale == latest.locale) {
           hasPublishedVersion = !!latest.published_at;

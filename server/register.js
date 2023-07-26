@@ -1,4 +1,5 @@
 "use strict";
+//@ts-check
 
 const _ = require("lodash");
 

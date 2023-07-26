@@ -1,6 +1,7 @@
 "use strict";
 const _ = require("lodash");
 const { isLocalizedContentType } = require("../../utils");
+const { getLatestValueByDB } = require("../../utils");
 
 const beforeDelete = async (event) => {
   const { params } = event;
@@ -51,7 +52,7 @@ const beforeDelete = async (event) => {
     );
 
     const latestByLocale = {};
-    for (const latest of latestInLocales) {
+    for (const latest of getLatestValueByDB(latestInLocales)) {
       latestByLocale[latest.locale] = latest.id;
     }
 
