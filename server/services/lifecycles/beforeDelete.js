@@ -24,17 +24,6 @@ const beforeDelete = async (event) => {
     },
   });
 
-  where.id = {
-    $ne: item.id,
-  };
-  await strapi.db.query(event.model.uid).update({
-    where,
-    sort: [{ publishedAt: "desc" }, { versionNumber: "desc" }],
-    data: {
-      isVisibleInListView: true,
-    },
-  });
-
   // Relink logic for localizations
   if (isLocalized) {
     const latestInLocales = await strapi.db.connection.raw(
@@ -48,13 +37,23 @@ const beforeDelete = async (event) => {
         ELSE published_at is not null AND version_number > a.version_number
         END
         )
-      ) AND vuid = '${item.vuid}'`
+      ) AND vuid = '${item.vuid} and id!=${item.id}'`
     );
 
     const latestByLocale = {};
     for (const latest of getLatestValueByDB(latestInLocales)) {
       latestByLocale[latest.locale] = latest.id;
     }
+
+    await strapi.db.query(uid).update({
+      where: {
+        ...where,
+        id: latestByLocale[item.locale],
+      },
+      data: {
+        isVisibleInListView: true,
+      },
+    });
 
     const allVersionsOtherLocales = await strapi.db
       .query(event.model.uid)
