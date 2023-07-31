@@ -24,17 +24,6 @@ const beforeDelete = async (event) => {
     },
   });
 
-  where.id = {
-    $ne: item.id,
-  };
-  await strapi.db.query(event.model.uid).update({
-    where,
-    sort: [{ publishedAt: "desc" }, { versionNumber: "desc" }],
-    data: {
-      isVisibleInListView: true,
-    },
-  });
-
   // Relink logic for localizations
   if (isLocalized) {
     const latestInLocales = await strapi.db.connection.raw(
@@ -48,14 +37,24 @@ const beforeDelete = async (event) => {
         ELSE published_at is not null AND version_number > a.version_number
         END
         )
-      ) AND vuid = '${item.vuid}'`
+      ) AND vuid = '${item.vuid}' AND id!='${item.id}'`
     );
 
     const latestByLocale = {};
     for (const latest of getLatestValueByDB(latestInLocales)) {
       latestByLocale[latest.locale] = latest.id;
     }
-
+    if (latestByLocale[item.locale]) {
+      await strapi.db.query(event.model.uid).update({
+        where: {
+          ...where,
+          id: latestByLocale[item.locale],
+        },
+        data: {
+          isVisibleInListView: true,
+        },
+      });
+    }
     const allVersionsOtherLocales = await strapi.db
       .query(event.model.uid)
       .findMany({
@@ -80,6 +79,31 @@ const beforeDelete = async (event) => {
         `INSERT INTO ${collectionName}_localizations_links (${attrName}_id, inv_${attrName}_id) VALUES ` +
           sqlValues.join(",")
       );
+    }
+  } else {
+    const latestVersion = await strapi.db.connection.raw(
+      `SELECT a.id, a.version_number, a.published_at
+      FROM ${collectionName} a WHERE NOT EXISTS (
+        SELECT 1 FROM ${model.collectionName}
+        WHERE vuid=a.vuid AND id!='${item.id}'  AND (
+        CASE WHEN a.published_at is null THEN (
+          published_at is not null OR version_number > a.version_number
+        )
+        ELSE published_at is not null AND version_number > a.version_number
+        END
+        )
+      ) AND vuid = '${item.vuid}' AND id!='${item.id}'`
+    );
+    if (getLatestValueByDB(latestVersion).length) {
+      await strapi.db.query(event.model.uid).update({
+        where: {
+          ...where,
+          id: getLatestValueByDB(latestVersion)[0].id,
+        },
+        data: {
+          isVisibleInListView: true,
+        },
+      });
     }
   }
 };
