@@ -1,0 +1,16 @@
+{
+  "components.Edit.versions": "Versões",
+  "components.Edit.versionSelectPlaceholder": "Selecione a versão",
+  "containers.Edit.currentShowedVersion": "Versão exibida",
+  "containers.Edit.currentPublishedVersion": "Versão publicada",
+  "containers.Edit.buttonPreview": "Prévia",
+  "containers.Edit.buttonSave": "Salvar como uma nova versão",
+  "containers.Edit.toggleComment": "Habilitar comentário da versão",
+  "CheckboxConfirmation.Modal.body": "Você gostaria de desabilitá-la?",
+  "CheckboxConfirmation.Modal.button-confirm": "Sim, desabilite",
+  "CheckboxConfirmation.Modal.content": "Desativar o controle de versão resultará na exclusão de todo o seu conteúdo, exceto a versão mais recente",
+  "plugin.schema.versions.versioned.description": "Permitir manter versões antigas do conteúdo",
+  "plugin.schema.versions.versioned.description-content-type": "Permite que você mantenha as versões antigas do seu conteúdo",
+  "plugin.schema.versions.versioned.label": "Habilitar o controle de versão para este tipo de conteúdo (Content-Type)",
+  "plugin.schema.versions.versioned.label-content-type": "Permite que você mantenha o controle de versão para este tipo de conteúdo (Content-Type)"
+}
