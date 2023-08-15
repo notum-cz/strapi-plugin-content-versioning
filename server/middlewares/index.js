@@ -1,5 +1,5 @@
-"use strict"
-const {relationUpdateMiddleware} = require("./relationUpdate");
+"use strict";
+const redirectToNewVersionOnUpdate = require("./redirectToNewVersionOnUpdate");
 module.exports = {
-    relationUpdateMiddleware
-}
+  redirectToNewVersionOnUpdate,
+};

@@ -1,5 +1,5 @@
-import extendCTBInitialDataMiddleware from './extendCTBInitialDataMiddleware';
-import extendCTBAttributeInitialDataMiddleware from './extendCTBAttributeInitialDataMiddleware';
+import extendCTBInitialDataMiddleware from "./extendCTBInitialDataMiddleware";
+import extendCTBAttributeInitialDataMiddleware from "./extendCTBAttributeInitialDataMiddleware";
 
 const middlewares = [
   extendCTBInitialDataMiddleware,
