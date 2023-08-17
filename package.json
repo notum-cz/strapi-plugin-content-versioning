@@ -9,7 +9,7 @@
     "Martin Čapek <martin.capek@notum.cz> (https://notum.cz/en/strapi)"
   ],
   "dependencies": {
-    "@strapi/utils": "^4.12.0",
+    "@strapi/utils": "^4.12.4",
     "lodash": "^4.17.21",
     "uuid": "^9.0.0"
   },
