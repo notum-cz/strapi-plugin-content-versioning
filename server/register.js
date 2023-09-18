@@ -7,12 +7,10 @@ const { getService } = require("./utils");
 
 const enableContentType = require("./migrations/content-type/enable");
 const disableContentType = require("./migrations/content-type/disable");
-const redirectToNewVersionOnUpdate = require("./middlewares/redirectToNewVersionOnUpdate");
 
 module.exports = ({ strapi }) => {
   extendVersionedContentTypes(strapi);
   addContentTypeSyncHooks(strapi);
-  addStrapiVersioningMiddleware(strapi);
 };
 
 /**
@@ -80,17 +78,4 @@ const extendVersionedContentTypes = (strapi) => {
       });
     }
   });
-};
-
-const addStrapiVersioningMiddleware = (strapi) => {
-  strapi.server.router.use(
-    "/content-manager/collection-types/:model/:id",
-    (ctx, next) => {
-      if (ctx.method === "PUT") {
-        return redirectToNewVersionOnUpdate(ctx, next);
-      }
-
-      return next();
-    }
-  );
 };

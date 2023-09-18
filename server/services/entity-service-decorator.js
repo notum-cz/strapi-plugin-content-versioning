@@ -138,6 +138,8 @@ const decorator = (service) => ({
       },
     });
 
+    console.log("uptd", data, entityId);
+
     if (!isVersionedContentType(model) || data.hasOwnProperty("publishedAt")) {
       //Is not versioned content or is just publishing/unpublishing
       if (data.publishedAt && isVersionedContentType(model)) {
