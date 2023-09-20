@@ -8,7 +8,6 @@ module.exports = {
     const { slug } = ctx.request.params;
     const { body: data } = ctx.request;
     const { user } = ctx.state;
-    console.log("save controller");
 
     const { createVersion } = getService("core-api");
 

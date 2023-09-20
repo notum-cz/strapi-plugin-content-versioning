@@ -138,8 +138,6 @@ const decorator = (service) => ({
       },
     });
 
-    console.log("uptd", data, entityId);
-
     if (!isVersionedContentType(model) || data.hasOwnProperty("publishedAt")) {
       //Is not versioned content or is just publishing/unpublishing
       if (data.publishedAt && isVersionedContentType(model)) {
@@ -357,7 +355,6 @@ const decorator = (service) => ({
 
     const where = { vuid: item.vuid };
     if (isLocalized) where.locale = item.locale;
-    console.log(item);
     await strapi.db.query(uid).updateMany({
       where,
       data: {
@@ -395,8 +392,6 @@ const decorator = (service) => ({
           isVisibleInListView: true,
         },
       });
-
-      console.log(item.id, latestInLocales, latestByLocale);
 
       const allVersionsOtherLocales = await strapi.db.query(uid).findMany({
         where: {
