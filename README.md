@@ -6,7 +6,9 @@ This plugin lets you flip back and forth between different versions of your cont
 
 ⚠️ i18n currently in **beta** stage.  
 ⚠️ Currently a **beta.**   
-⚠️ [Open call for developers](#history)
+⚠️ [Open call for developers](#history)  
+⚠️ Might not work with the [Strapi publisher plugin](https://market.strapi.io/plugins/strapi-plugin-publisher)  
+⚠️ Might not work if `DATABASE_CLIENT` env variable is not set. More information [here](https://github.com/notum-cz/strapi-plugin-content-versioning/issues/113).
 
 We're actively using this plugin in production, but we're still tweaking and improving it.
 
@@ -55,7 +57,7 @@ If you are using a version lower than 1.0.1 [patch-package](https://www.npmjs.co
    yarn add patch-package
    ```
 2. Create folder `patches` in the root of your project
-3. Copy file `@strapi+admin+4.11.4.patch` located in  `patches/` of this repository to the folder created in the previous step
+3. Copy file `@strapi+admin+4.12.0.patch` located in  `patches/` of this repository to the folder created in the previous step
 4. Add the line `"postinstall": "patch-package",` to the scripts section of the `package.json`
 5. Run `npm run postinstall`
 
