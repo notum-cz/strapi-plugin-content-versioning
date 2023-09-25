@@ -43,12 +43,11 @@ module.exports = ({ env }) => ({
 3. **Enabled versioning in the settings of your Content Type (Content-Type Builder -> Edit -> Advanced settings)**. _Same way as localization plugin._
 2. Check if the **draft/publish** system is enabled on your **content type.** This is **required** for the plugin to work.
 3. Roles which should use the plugin must have the appropriate permissions activated, which can be done in Settings > Roles > ... > Plugins view.
-5. (Optional) If you want the native Save button to also work with this plugin, you'll need to follow the instructions below. ⬇️⬇️
 
 
-## 💾 Override the Save Button (Optional)
+## 💾 Override the Save Button (🚨Deprecated since 1.0.1)
 
-[Patch-package](https://www.npmjs.com/package/patch-package) has to be used to make the native Save button work with this plugin. We are working closely with the core team to eliminate this extra step.
+If you are using a version lower than 1.0.1 [patch-package](https://www.npmjs.com/package/patch-package) has to be used to make the native Save button work with this plugin. We are working closely with the core team to eliminate this extra step.
 
 1. Install `patch-package`
    ```
@@ -66,7 +65,6 @@ If a patch for your specific Strapi version is missing, please inform us or incl
 
 ## 🛣️ Road map
 
-- ✨ Elimination of the "patch-package problem"
 - ✨ Extension of functionality also for single types
 - ✨ Autosave
 - ✨ Update of the current version without creating new history item

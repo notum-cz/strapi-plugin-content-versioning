@@ -18,19 +18,22 @@ module.exports = {
           vuid: data.vuid,
           //locale: data.locale // Clone all or only this locale ?
         },
-        sort: [{ versionNumber: 'asc' }], // Incrementaly create versions
+        sort: [{ versionNumber: "asc" }], // Incrementaly create versions
       });
-  
+
       let initialCloneVersion = null;
       const newVuid = uuid();
-  
+
       for (const versionData of allVersions) {
         versionData.vuid = newVuid;
         const created = await createVersion(slug, versionData, user, {});
-        
+
         // identify first clone version to be returned
-        if (created.locale == data.locale && created.versionNumber == data.versionNumber) {
-          initialCloneVersion = created
+        if (
+          created.locale == data.locale &&
+          created.versionNumber == data.versionNumber
+        ) {
+          initialCloneVersion = created;
         }
       }
       return initialCloneVersion;

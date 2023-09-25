@@ -1,25 +1,18 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { useHistory, useLocation } from "react-router-dom";
-import _ from "lodash";
-import { useIntl } from "react-intl";
 import { Box } from "@strapi/design-system/Box";
-import { Stack } from "@strapi/design-system/Stack";
 import { Divider } from "@strapi/design-system/Divider";
+import { Stack } from "@strapi/design-system/Stack";
+import _ from "lodash";
+import React, { useCallback, useEffect, useState } from "react";
+import { useIntl } from "react-intl";
+import { useHistory, useLocation } from "react-router-dom";
 // import { TableLabel } from "@strapi/design-system/Text";
-import { Select, Option } from "@strapi/design-system/Select";
-import { Typography } from "@strapi/design-system/Typography";
-import { Flex } from "@strapi/design-system/Flex";
 import { Checkbox } from "@strapi/design-system/Checkbox";
+import { Option, Select } from "@strapi/design-system/Select";
 import { Textarea } from "@strapi/design-system/Textarea";
+import { Typography } from "@strapi/design-system/Typography";
 
-import {
-  useCMEditViewDataManager,
-  useNotification,
-} from "@strapi/helper-plugin";
-import { Button } from "@strapi/design-system/Button";
+import { useCMEditViewDataManager } from "@strapi/helper-plugin";
 import { format, parseISO } from "date-fns";
-
-import { request, useQueryParams } from "@strapi/helper-plugin";
 
 import { getTrad } from "../../utils";
 
@@ -36,27 +29,38 @@ const Versions = () => {
     hasDraftAndPublish,
     layout,
     isDuplicatingEntry,
-    onChange
+    onChange,
   } = useCMEditViewDataManager();
-  const toggleNotification = useNotification();
 
   if (!_.get(layout, "pluginOptions.versions.versioned", false)) {
     return null;
   }
 
-  const [{ rawQuery }] = useQueryParams();
   const [hasComment, setHasComment] = useState(!!initialData?.versionComment);
   const [data, setData] = useState([]);
   const [publishedVersion, setPublishedVersion] = useState(undefined);
 
   useEffect(() => {
-    setHasComment(!!initialData?.versionComment?.length)
+    setHasComment(!!initialData?.versionComment?.length);
   }, [initialData]);
 
   useEffect(() => {
     processVersions(modifiedData);
-    //console.log(rawQuery, modifiedData);
   }, [modifiedData]);
+
+  useEffect(() => {
+    if (modifiedData.id) {
+      const UrlSegments = location.pathname.split("/");
+      const urlId = parseInt(UrlSegments[UrlSegments.length - 1]);
+
+      if (modifiedData.id !== urlId) {
+        replace({
+          search: location.search,
+          pathname: `/content-manager/collectionType/${slug}/${modifiedData.id}`,
+        });
+      }
+    }
+  }, [modifiedData.id]);
 
   const processVersions = useCallback(
     (data) => {
@@ -98,7 +102,9 @@ const Versions = () => {
       }
 
       // fixed bug when version being iterated was not the same type as the version being selected (string != number)
-      const selectedVersion = data.find((v) => v.versionNumber === Number(value));
+      const selectedVersion = data.find(
+        (v) => v.versionNumber === Number(value)
+      );
 
       push({
         search: location.search,
@@ -107,47 +113,6 @@ const Versions = () => {
     },
     [data, push, slug]
   );
-
-  const onSaveClick = useCallback(async () => {
-    const {
-      createdAt,
-      createdBy,
-      publishedAt,
-      updatedAt,
-      updatedBy,
-      id,
-      ...newData
-    } = modifiedData;
-
-    try {
-      const result = await request(
-        `/content-versioning/${slug}/save${rawQuery}`,
-        {
-          method: "POST",
-          body: {
-            ...newData,
-            id: id,
-          },
-        }
-      );
-
-      replace({
-        search: location.search,
-        pathname: `/content-manager/collectionType/${slug}/${result.id}`,
-      });
-    } catch (e) {
-      const name = _.get(e, "response.payload.error.name");
-      const message = _.get(e, "response.payload.error.message");
-      let notificationMessage = "Error";
-      if (name && message) {
-        notificationMessage = `${name}: ${message}`;
-      }
-      toggleNotification({
-        type: "warning",
-        message: notificationMessage,
-      });
-    }
-  }, [modifiedData, push, request, slug]);
 
   return (
     <Box
@@ -257,7 +222,13 @@ const Versions = () => {
           onValueChange={(value) => {
             setHasComment(value);
             if (!value) {
-              onChange({ target: { name: 'versionComment', value: undefined, type: 'textarea' } })
+              onChange({
+                target: {
+                  name: "versionComment",
+                  value: undefined,
+                  type: "textarea",
+                },
+              });
             }
           }}
           value={hasComment}
@@ -269,34 +240,21 @@ const Versions = () => {
           })}
         </Checkbox>
         {hasComment && (
-          <Textarea name="versionComment" onChange={(comment) => onChange(comment)}>
+          <Textarea
+            name="versionComment"
+            onChange={(comment) => {
+              onChange({
+                target: {
+                  name: "versionComment",
+                  value: comment.target.value,
+                  type: "textarea",
+                },
+              });
+            }}
+          >
             {modifiedData?.versionComment}
           </Textarea>
         )}
-
-        {/* TODO: preview for FE app */}
-        {/* {!isCreatingEntry && (
-          <Button variant="secondary">
-            {formatMessage({
-              id: getTrad("containers.Edit.buttonPreview"),
-              defaultMessage: "Preview",
-            })}
-          </Button>
-        )} */}
-        <Button
-          variant="secondary"
-          fullWidth
-          onClick={onSaveClick}
-        /*
-      ! Enabled before working patch of save button
-      disabled={isCreatingEntry || isDuplicatingEntry}
-      */
-        >
-          {formatMessage({
-            id: getTrad("containers.Edit.buttonSave"),
-            defaultMessage: "Save new version",
-          })}
-        </Button>
       </Stack>
     </Box>
   );
