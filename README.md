@@ -20,6 +20,8 @@ We're actively using this plugin in production, but we're still tweaking and imp
 ✅ Keeps a history of all changes, providing the ability to time travel (revert back to previous versions). <br>
 ✅ Gives you the ability to have  **different published and draft data** <br>
 
+Data about all of the versions can be accessed by adding a parameter like `?populate=versions&publicationState=preview`
+
 ## 🧑‍💻 Installation
 
 1. Install the package with your preferred package manager using one of the commands bellow:
@@ -65,9 +67,11 @@ If a patch for your specific Strapi version is missing, please inform us or incl
 
 ## 🛣️ Road map
 
-- ✨ Extension of functionality also for single types
-- ✨ Autosave
-- ✨ Update of the current version without creating new history item
+Are any of these features significant to you? Please show your support by giving a thumbs up on the linked issues. This will help us assess their priority on the roadmap.
+
+- ✨ [Relations support](https://github.com/notum-cz/strapi-plugin-content-versioning/issues/132) 
+- ✨ [Extension of functionality also for single types](https://github.com/notum-cz/strapi-plugin-content-versioning/issues/133)
+- ✨ [Update of the current version without creating a new version](https://github.com/notum-cz/strapi-plugin-content-versioning/issues/134)
 
 ## ⛔️ Known limitations
 
