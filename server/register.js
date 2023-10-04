@@ -7,9 +7,11 @@ const { getService } = require("./utils");
 
 const enableContentType = require("./migrations/content-type/enable");
 const disableContentType = require("./migrations/content-type/disable");
+const { relationUpdateMiddleware } = require("./middlewares");
 
 module.exports = ({ strapi }) => {
   extendVersionedContentTypes(strapi);
+  addStrapiVersioningMiddleware(strapi);
   addContentTypeSyncHooks(strapi);
 };
 
@@ -78,4 +80,21 @@ const extendVersionedContentTypes = (strapi) => {
       });
     }
   });
+};
+
+/**
+ * Adds middlewares on CM publish routes
+ * @param {Strapi} strapi
+ */
+const addStrapiVersioningMiddleware = (strapi) => {
+  strapi.server.router.use(
+    "/content-manager/collection-types/:model/:id/actions/publish",
+    (ctx, next) => {
+      if (ctx.method === "POST") {
+        return relationUpdateMiddleware(ctx, next);
+      }
+
+      return next();
+    }
+  );
 };
