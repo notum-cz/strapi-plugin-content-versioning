@@ -18,16 +18,14 @@ const relationUpdateMiddleware = async (ctx, next) => {
   ) {
     return next();
   }
-  // console.log(strapi.contentTypes);
+
   const entry = await strapi.entityService.findOne(model, id);
-  console.log(entry);
   const allVersionIds = await strapi.db.query(model).findMany({
     select: ["id"],
     where: {
       vuid: entry.vuid,
     },
   });
-  console.log(allVersionIds);
   const allVersionIdsNumbers = allVersionIds.map((id) => id.id);
   if (allVersionIdsNumbers.length < 2) {
     // there are no multiple version, no need to update relations
@@ -48,8 +46,6 @@ const relationUpdateMiddleware = async (ctx, next) => {
     )
     .flat();
 
-  console.log(matchedComponents, matchedContentTypes);
-
   const allLinkedComponents = [matchedComponents, matchedContentTypes].flat();
   //find all relations that point to one of available ids
   allLinkedComponents.forEach(findAndUpdateRelations(allVersionIdsNumbers, id));
@@ -57,7 +53,6 @@ const relationUpdateMiddleware = async (ctx, next) => {
 };
 
 function findAndUpdateRelations(allVersionIdsNumbers, id) {
-  console.log(allVersionIdsNumbers, id);
   return async (component) => {
     const populateQuery = {};
     const filtersQuery = {};
@@ -73,19 +68,8 @@ function findAndUpdateRelations(allVersionIdsNumbers, id) {
       populate: populateQuery,
       filters: filtersQuery,
     });
-    console.log(filtersQuery);
     //update all content types to the latest published version
     results.forEach(async (result) => {
-      console.log(
-        component.key,
-        result.id,
-        generateUpdateData(
-          result,
-          component.attributes,
-          parseInt(id),
-          allVersionIdsNumbers
-        )
-      );
       await strapi.db.query(component.key).update({
         where: {
           id: result.id,
