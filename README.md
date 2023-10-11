@@ -4,14 +4,8 @@ This plugin lets you flip back and forth between different versions of your cont
 
 ## ⚠️✋ Read before installation
 
-⚠️ i18n currently in **beta** stage.  
-⚠️ Currently a **beta.**   
-⚠️ [Open call for developers](#history)  
 ⚠️ Might not work with the [Strapi publisher plugin](https://market.strapi.io/plugins/strapi-plugin-publisher)  
 ⚠️ Might not work if `DATABASE_CLIENT` env variable is not set. More information [here](https://github.com/notum-cz/strapi-plugin-content-versioning/issues/113).
-
-We're actively using this plugin in production, but we're still tweaking and improving it.
-
 
 ## 🙉 What does the plugin do for you?
 
@@ -83,13 +77,10 @@ Are any of these features significant to you? Please show your support by giving
 We manage bugs through [GitHub Issues](https://github.com/notum-cz/strapi-plugin-content-versioning/issues). <br>
 If you're interested in helping us, you would be a rock  ⭐.
 
-## 🧔 Authors
+## 🧔 Maintainance
 
-The main star: **Filip Janko** <br>
-Tech problem solver #1: **Martin Čapek** https://github.com/martincapek <br>
-Tech problem solver #2: **Tomáš Novotný** <br>
-Maintainer: **Ondřej Mikulčík** https://github.com/omikulcik <br>
-Project owner: **Ondřej Janošík** <br>
+The repository is maintained by [**Ondřej Mikulčík**]( https://github.com/omikulcik), a member of the Notum Technologies development team.
+
 
 ## 🚀 Created with passion by [Notum Technologies](https://notum.cz/en)
 
@@ -101,35 +92,6 @@ Project owner: **Ondřej Janošík** <br>
 ✔️ We offer valuable assistance in developing custom STRAPI, web, and mobile apps to fulfill your requirements and goals.. <br>
 ✔️ With a track record of 100+ projects, our open communication and exceptional project management skills provide us with the necessary tools to get your project across the finish line.<br>
 📅 To initiate a discussion about your Strapi project, feel free to reach out to us via email at sales@notum.cz. We're here to assist you!
-
-# <br> 📣👨‍💻👩‍💻 Open call for help for an awesome plugin
-## History
-
-We believed this was a **key feature** that didn't appear too complex.
-
-Therefore, we rolled up our sleeves and got to work on it. We **quickly developed an alpha version** and were among the first to release plugins in the new marketplace.
-
-However, the arrival of **early adopters**, with **increasingly complex data structures** and unique use cases, gave us quite the brain-teaser.
-
-We called in our top brains and made further enhancements. Things were still going smoothly, but **after securing two amazing and highly important projects, our attention shifted**. Unfortunately, this meant leaving the plugin without the open-source love it deserved for some time.
-
-## <br /> Open call for help and a little bit of heads-up
-
-This plugin presents an enticing opportunity for a senior developer to delve into coding and have an enjoyable experience.
-
-Our senior developer Martin, the main author, is also available to answer your questions.
-
-Issues are emerging as people actively use the plugin. Just take a look - [https://github.com/notum-cz/strapi-plugin-content-versioning/issues](https://github.com/notum-cz/strapi-plugin-content-versioning/issues)
-
-<br> It could be **you** who makes this plugin great again!
-
-## <br /> The future and possibilities
-
-We strongly believe that this plugin has the potential to become one of the top 5 most widely used plugins in the marketplace. However, to turn this vision into reality, we need the support of fellow developers who can help us take it to the place it deserves to be.
-
-**Therefore, we extend an open call to all companies and solo developers to help us developing this plugin.**
-
-We are more than willing to accept and review pull requests (PRs) and address any questions you may have.
 
 # <br> Please contact us at sales@notum.cz
 
