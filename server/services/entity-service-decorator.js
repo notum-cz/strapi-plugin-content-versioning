@@ -284,58 +284,13 @@ const decorator = (service) => ({
       // omit current locale
       data.localizations = Object.values(_.omit(latestByLocale, data.locale));
     }
-
     // remove old ids
-    const getRelationsToUpdate = () => {
-      const result = [];
-      const attributes = model.attributes;
-      for (const key in attributes) {
-        if (
-          attributes[key].type === "relation" &&
-          attributes[key].target.startsWith("api::") &&
-          key !== "versions"
-        ) {
-          result.push(key);
-        }
-      }
+    const newData = await createNewVersion(uid, data, model);
 
-      return result;
-    };
-    const creatingFromEntry = await strapi.db.query(uid).findOne({
-      where: {
-        id: data.id,
-      },
-      populate: getRelationsToUpdate(),
-    });
-    const newData = createNewVersion(uid, data);
-    const connects = {};
-    const rl = getRelationsToUpdate().forEach((rel) => {
-      const prevRel = creatingFromEntry[rel];
-      if (prevRel) {
-        const newDataRel = newData[rel];
-        const newDataConnects = newDataRel.connect;
-        const newDataDisconnects = newDataRel.disconnect;
-        const idsHandledbyEditor = [
-          ...newDataConnects.map((conn) => conn.id),
-          ...newDataDisconnects.map((conn) => conn.id),
-        ];
-        const mergedConnects = [...newDataConnects];
-        const prevRelIds = Array.isArray(prevRel)
-          ? prevRel.map((rel) => rel.id)
-          : [prevRel.id];
-        prevRelIds.forEach((pid) => {
-          if (!idsHandledbyEditor.includes(pid)) {
-            mergedConnects.push(pid);
-          }
-        });
-
-        connects[rel] = { connect: mergedConnects };
-      }
-    });
     // Create Version
     const result = await service.create.call(this, uid, {
       ...opts,
-      data: { ...newData, ...connects },
+      data: newData,
     });
     // Relink all versions from other locales if result is The latest(published)!
     if (result.isVisibleInListView && isLocalized) {
