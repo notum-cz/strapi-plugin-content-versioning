@@ -47,6 +47,7 @@ const relationUpdateMiddleware = async (ctx, next) => {
     .flat();
 
   const allLinkedComponents = [matchedComponents, matchedContentTypes].flat();
+
   //find all relations that point to one of available ids
   allLinkedComponents.forEach(findAndUpdateRelations(allVersionIdsNumbers, id));
   return next();
@@ -55,19 +56,25 @@ const relationUpdateMiddleware = async (ctx, next) => {
 function findAndUpdateRelations(allVersionIdsNumbers, id) {
   return async (component) => {
     const populateQuery = {};
-    const filtersQuery = {};
+    const filtersQuery = { $or: [] };
     component.attributes.forEach((attr) => {
       populateQuery[attr.name] = {
-        filters: {
-          id: allVersionIdsNumbers,
+        where: {
+          id: {
+            $in: allVersionIdsNumbers,
+          },
         },
       };
-      filtersQuery[attr.name] = allVersionIdsNumbers;
+      // Filter entries that include field with a relation to an older version of the newly created entity
+      filtersQuery.$or.push({
+        [attr.name]: { id: { $in: allVersionIdsNumbers } },
+      });
     });
     const results = await strapi.query(component.key).findMany({
       populate: populateQuery,
-      filters: filtersQuery,
+      where: filtersQuery,
     });
+
     //update all content types to the latest published version
     results.forEach(async (result) => {
       await strapi.db.query(component.key).update({
@@ -110,18 +117,24 @@ function generateUpdateData(result, attributes, id, allIds) {
   const updateData = {};
   attributes.forEach((attr) => {
     let resultAttribute = result[attr.name];
-    if (typeof resultAttribute === "object") {
+    if (Array.isArray(resultAttribute)) {
+      // Other entries can be related so only select older versions of the newly created entry.
+      const otherVersionsOfEntry = resultAttribute
+        .map((resu) => resu.id)
+        .filter((resultId) => resultId !== id)
+        .filter((resultId) => allIds.includes(resultId));
       updateData[attr.name] = {
-        disconnect: [resultAttribute.id],
-        connect: [id],
+        disconnect: otherVersionsOfEntry,
+        connect: otherVersionsOfEntry.length ? [id] : [],
       };
-    } else if (Array.isArray(resultAttribute)) {
+    } else if (resultAttribute && typeof resultAttribute === "object") {
+      // This has to be checked because of the OR condition in the filters.
+      const isCurrentRelationVersionOfEntry = allIds.includes(
+        resultAttribute.id
+      );
       updateData[attr.name] = {
-        disconnect: resultAttribute
-          .map((resu) => resu.id)
-          .filter((resultId) => resultId !== id)
-          .filter((resultId) => allIds.includes(resultId)),
-        connect: [id],
+        disconnect: isCurrentRelationVersionOfEntry ? [resultAttribute.id] : [],
+        connect: isCurrentRelationVersionOfEntry ? [id] : [],
       };
     }
   });
