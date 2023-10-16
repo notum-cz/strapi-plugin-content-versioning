@@ -124,16 +124,76 @@ const getVersionedAttributes = (model) => {
   );
 };
 
-const createNewVersion = (modelUid, oldVersion) => {
+const getUpdatableRelations = (model) => {
+  const result = [];
+  const attributes = model.attributes;
+  for (const key in attributes) {
+    if (
+      attributes[key].type === "relation" &&
+      attributes[key].target.startsWith("api::") &&
+      key !== "versions"
+    ) {
+      result.push(key);
+    }
+  }
+
+  return result;
+};
+
+const manageRelations = async (newData, uid, oldVersionId, model) => {
+  const updatableRelations = getUpdatableRelations(model);
+  const previousVersion = await strapi.db.query(uid).findOne({
+    where: {
+      id: oldVersionId,
+    },
+    populate: updatableRelations,
+  });
+  const connects = {};
+  updatableRelations.forEach((rel) => {
+    const prevRel = previousVersion[rel];
+    if (prevRel) {
+      const newDataRel = newData[rel];
+      const newDataConnects = newDataRel.connect;
+      const newDataDisconnects = newDataRel.disconnect;
+      //Connect relations from previous version but only if they were not changed by user in the current version.
+      const idsHandledByEditor = [
+        ...newDataConnects.map((conn) => conn.id),
+        ...newDataDisconnects.map((conn) => conn.id),
+      ];
+      const mergedConnects = [...newDataConnects];
+      const prevRelIds = Array.isArray(prevRel)
+        ? prevRel.map((rel) => rel.id)
+        : [prevRel.id];
+      prevRelIds.forEach((pid) => {
+        if (!idsHandledByEditor.includes(pid)) {
+          mergedConnects.push(pid);
+        }
+      });
+
+      connects[rel] = { connect: mergedConnects };
+    }
+  });
+  return {
+    ...newData,
+    ...connects,
+  };
+};
+
+const createNewVersion = async (modelUid, oldVersion, model) => {
   const modelDef = strapi.getModel(modelUid);
   // Remove timestamps
   ["createdAt", "updatedAt", "publishedAt"].forEach((ts) => {
     if (oldVersion[ts]) {
       delete oldVersion[ts];
     }
-  })
+  });
 
-  return removeIds(modelDef)(oldVersion);
+  return await manageRelations(
+    removeIds(modelDef)(oldVersion),
+    modelUid,
+    oldVersion.id,
+    model
+  );
 };
 
 module.exports = () => ({

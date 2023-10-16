@@ -284,9 +284,9 @@ const decorator = (service) => ({
       // omit current locale
       data.localizations = Object.values(_.omit(latestByLocale, data.locale));
     }
-
     // remove old ids
-    const newData = createNewVersion(uid, data);
+    const newData = await createNewVersion(uid, data, model);
+
     // Create Version
     const result = await service.create.call(this, uid, {
       ...opts,
