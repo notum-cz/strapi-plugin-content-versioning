@@ -63,14 +63,12 @@ If a patch for your specific Strapi version is missing, please inform us or incl
 
 Are any of these features significant to you? Please show your support by giving a thumbs up on the linked issues. This will help us assess their priority on the roadmap.
 
-- ✨ [Relations support](https://github.com/notum-cz/strapi-plugin-content-versioning/issues/132) 
 - ✨ [Extension of functionality also for single types](https://github.com/notum-cz/strapi-plugin-content-versioning/issues/133)
 - ✨ [Update of the current version without creating a new version](https://github.com/notum-cz/strapi-plugin-content-versioning/issues/134)
 
 ## ⛔️ Known limitations
 
 - ✋  Not working with UID and unique fields
-- ✋  Not working with relations
 
 ## 🐛 Bugs
 
