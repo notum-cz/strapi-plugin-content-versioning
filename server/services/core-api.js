@@ -105,7 +105,7 @@ module.exports = {
     }
 
     // remove old ids
-    const newData = createNewVersion(slug, data);
+    const newData = await createNewVersion(slug, data, model);
     // Create Version
     const result = await strapi.entityService.create(slug, { data: newData });
 
