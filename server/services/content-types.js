@@ -141,6 +141,10 @@ const getUpdatableRelations = (model) => {
 };
 
 const manageRelations = async (newData, uid, oldVersionId, model) => {
+  if(!oldVersionId) {
+    return newData;
+  }
+
   const updatableRelations = getUpdatableRelations(model);
   const previousVersion = await strapi.db.query(uid).findOne({
     where: {
