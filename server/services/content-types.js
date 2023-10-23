@@ -131,7 +131,8 @@ const getUpdatableRelations = (model) => {
     if (
       attributes[key].type === "relation" &&
       attributes[key].target.startsWith("api::") &&
-      key !== "versions"
+      key !== "versions" &&
+      key !== "localizations"
     ) {
       result.push(key);
     }
@@ -141,7 +142,7 @@ const getUpdatableRelations = (model) => {
 };
 
 const manageRelations = async (newData, uid, oldVersionId, model) => {
-  if(!oldVersionId) {
+  if (!oldVersionId) {
     return newData;
   }
 
@@ -153,6 +154,7 @@ const manageRelations = async (newData, uid, oldVersionId, model) => {
     populate: updatableRelations,
   });
   const connects = {};
+  console.log(updatableRelations);
   updatableRelations.forEach((rel) => {
     const prevRel = previousVersion[rel];
     if (prevRel) {
