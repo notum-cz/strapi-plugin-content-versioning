@@ -55,6 +55,8 @@ const getLatestValueByDB = (latest) => {
       return latest.rows;
     case "mysql":
       return latest[0];
+    case "mysql2":
+      return latest[0];
     default:
       return latest;
   }
