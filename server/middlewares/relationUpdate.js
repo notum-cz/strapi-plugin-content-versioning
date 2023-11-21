@@ -19,7 +19,9 @@ const relationUpdateMiddleware = async (ctx, next) => {
     return next();
   }
 
-  const entry = await strapi.entityService.findOne(model, id);
+  const entry = await strapi.entityService.findOne(model, id, {
+    populate: "*",
+  });
   const allVersionIds = await strapi.db.query(model).findMany({
     select: ["id"],
     where: {
@@ -49,11 +51,13 @@ const relationUpdateMiddleware = async (ctx, next) => {
   const allLinkedComponents = [matchedComponents, matchedContentTypes].flat();
 
   //find all relations that point to one of available ids
-  allLinkedComponents.forEach(findAndUpdateRelations(allVersionIdsNumbers, id));
+  allLinkedComponents.forEach(
+    findAndUpdateRelations(allVersionIdsNumbers, id, entry, modelDef)
+  );
   return next();
 };
 
-function findAndUpdateRelations(allVersionIdsNumbers, id) {
+function findAndUpdateRelations(allVersionIdsNumbers, id, entry, modelDef) {
   return async (component) => {
     const populateQuery = {};
     const filtersQuery = { $or: [] };
@@ -74,9 +78,23 @@ function findAndUpdateRelations(allVersionIdsNumbers, id) {
       populate: populateQuery,
       where: filtersQuery,
     });
+    let filteredResults = results;
+    if (component.attributes[0].relationType === "manyToMany") {
+      //For many to many relations only update those relations that are still present on the entry otherwise all relations from all other versions would be connected to the new entry.
+      const relationAttribute = Object.entries(modelDef.attributes).find(
+        ([key, value]) => value.target === component.key
+      )[0];
+
+      const relationAttributeIds = entry[relationAttribute].map(
+        (attr) => attr.id
+      );
+      filteredResults = results.filter((result) =>
+        relationAttributeIds.includes(result.id)
+      );
+    }
 
     //update all content types to the latest published version
-    results.forEach(async (result) => {
+    filteredResults.forEach(async (result) => {
       await strapi.db.query(component.key).update({
         where: {
           id: result.id,
