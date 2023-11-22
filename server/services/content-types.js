@@ -154,7 +154,6 @@ const manageRelations = async (newData, uid, oldVersionId, model) => {
     populate: updatableRelations,
   });
   const connects = {};
-  console.log(updatableRelations);
   updatableRelations.forEach((rel) => {
     const prevRel = previousVersion[rel];
     if (prevRel) {
