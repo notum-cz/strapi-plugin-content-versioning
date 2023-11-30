@@ -1,4 +1,5 @@
 import { Box } from "@strapi/design-system/Box";
+import { Button } from "@strapi/design-system/Button";
 import { Divider } from "@strapi/design-system/Divider";
 import { Stack } from "@strapi/design-system/Stack";
 import _ from "lodash";
@@ -11,7 +12,10 @@ import { Option, Select } from "@strapi/design-system/Select";
 import { Textarea } from "@strapi/design-system/Textarea";
 import { Typography } from "@strapi/design-system/Typography";
 
-import { useCMEditViewDataManager } from "@strapi/helper-plugin";
+import {
+  useCMEditViewDataManager,
+  useFetchClient,
+} from "@strapi/helper-plugin";
 import { format, parseISO } from "date-fns";
 
 import { getTrad } from "../../utils";
@@ -31,6 +35,8 @@ const Versions = () => {
     isDuplicatingEntry,
     onChange,
   } = useCMEditViewDataManager();
+
+  const { put } = useFetchClient();
 
   if (!_.get(layout, "pluginOptions.versions.versioned", false)) {
     return null;
@@ -114,6 +120,13 @@ const Versions = () => {
     [data, push, slug]
   );
 
+  const handleUpdateShowedVersion = () => {
+    put(
+      `/content-versioning/${slug}/${initialData.id}/update-version`,
+      modifiedData
+    );
+  };
+
   return (
     <Box
       as="aside"
@@ -175,6 +188,12 @@ const Versions = () => {
                 {format(parseISO(initialData.createdAt), "MMM d, yyyy HH:mm")}
               </Typography>
             </div>
+            <Button marginTop={4} onClick={handleUpdateShowedVersion}>
+              {formatMessage({
+                id: getTrad("containers.Edit.updateShowedVersion"),
+                defaultMessage: "Update showed version",
+              })}
+            </Button>
           </div>
         )}
         {!isDuplicatingEntry && data.length > 0 && (
