@@ -7,7 +7,7 @@
   "containers.Edit.buttonSave": "Yeni sürüm olarak kaydet",
   "containers.Edit.toggleComment": "Sürüm yorumunu etkinleştir",
   "containers.Edit.updateShowedVersion": "Gösterilen sürümü güncelle",
-  "CheckboxConfirmation.Modal.body": "Devre dışı bırakmak istiyor musunuz??",
+  "CheckboxConfirmation.Modal.body": "Devre dışı bırakmak istiyor musunuz?",
   "CheckboxConfirmation.Modal.button-confirm": "Evet, devre dışı bırak",
   "CheckboxConfirmation.Modal.content": "Sürüm oluşturmanın devre dışı bırakılması, en son sürümler hariç tüm içeriğinizin silinmesine neden olacaktır.",
   "plugin.schema.versions.versioned.description": "İçeriğin eski sürümlerini saklamanıza olanak tanır",
