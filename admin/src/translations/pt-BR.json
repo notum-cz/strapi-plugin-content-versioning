@@ -6,6 +6,7 @@
   "containers.Edit.buttonPreview": "Prévia",
   "containers.Edit.buttonSave": "Salvar como uma nova versão",
   "containers.Edit.toggleComment": "Habilitar comentário da versão",
+  "containers.Edit.updateShowedVersion": "Atualização mostrou versão",
   "CheckboxConfirmation.Modal.body": "Você gostaria de desabilitá-la?",
   "CheckboxConfirmation.Modal.button-confirm": "Sim, desabilite",
   "CheckboxConfirmation.Modal.content": "Desativar o controle de versão resultará na exclusão de todo o seu conteúdo, exceto a versão mais recente",

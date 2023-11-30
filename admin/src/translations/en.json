@@ -6,6 +6,7 @@
   "containers.Edit.buttonPreview": "Preview",
   "containers.Edit.buttonSave": "Save as a new version",
   "containers.Edit.toggleComment": "Enable version comment",
+  "containers.Edit.updateShowedVersion": "Update showed version",
   "CheckboxConfirmation.Modal.body": "Do you want to disable it?",
   "CheckboxConfirmation.Modal.button-confirm": "Yes, disable",
   "CheckboxConfirmation.Modal.content": "Disabling versioning will engender the deletion of all your content but the latest versions.",
