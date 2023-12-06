@@ -1,0 +1,17 @@
+{
+  "components.Edit.versions": "Sürüm",
+  "components.Edit.versionSelectPlaceholder": "Sürüm Seç",
+  "containers.Edit.currentShowedVersion": "Gösterilen Sürüm",
+  "containers.Edit.currentPublishedVersion": "Yayınlanmış sürüm",
+  "containers.Edit.buttonPreview": "Önizle",
+  "containers.Edit.buttonSave": "Yeni sürüm olarak kaydet",
+  "containers.Edit.toggleComment": "Sürüm yorumunu etkinleştir",
+  "containers.Edit.updateShowedVersion": "Gösterilen sürümü güncelle",
+  "CheckboxConfirmation.Modal.body": "Devre dışı bırakmak istiyor musunuz?",
+  "CheckboxConfirmation.Modal.button-confirm": "Evet, devre dışı bırak",
+  "CheckboxConfirmation.Modal.content": "Sürüm oluşturmanın devre dışı bırakılması, en son sürümler hariç tüm içeriğinizin silinmesine neden olacaktır.",
+  "plugin.schema.versions.versioned.description": "İçeriğin eski sürümlerini saklamanıza olanak tanır",
+  "plugin.schema.versions.versioned.description-content-type": "İçeriğin eski sürümlerini saklamanıza olanak tanır",
+  "plugin.schema.versions.versioned.label": "Bu İçerik Tipi için sürüm oluşturmayı etkinleştir",
+  "plugin.schema.versions.versioned.label-content-type": "Bu İçerik Tipi için sürüm oluşturmayı etkinleştir"
+}
