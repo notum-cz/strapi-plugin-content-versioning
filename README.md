@@ -5,7 +5,7 @@ This plugin lets you flip back and forth between different versions of your cont
 ## ⚠️✋ Read before installation
 
 ⚠️ Might not work with the [Strapi publisher plugin](https://market.strapi.io/plugins/strapi-plugin-publisher)  
-⚠️ Might not work if `DATABASE_CLIENT` env variable is not set. More information [here](https://github.com/notum-cz/strapi-plugin-content-versioning/issues/113). 
+⚠️ Might not work if `DATABASE_CLIENT` env variable is not set. More information [here](https://github.com/notum-cz/strapi-plugin-content-versioning/issues/113).    
 ⚠️ Does not work well with GraphQL ([more information](https://github.com/notum-cz/strapi-plugin-content-versioning/issues/152))
 
 ## 🙉 What does the plugin do for you?
