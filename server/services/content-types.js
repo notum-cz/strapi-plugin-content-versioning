@@ -124,9 +124,69 @@ const getVersionedAttributes = (model) => {
   );
 };
 
+const reduceArray = (arrayOfObjects) => {
+  const resultMap = {};
+  const resultArray = [];
+
+  arrayOfObjects.forEach((obj) => {
+    if (typeof obj === "string") {
+      resultArray.push(obj);
+      return;
+    }
+    for (const key in obj) {
+      if (Array.isArray(obj[key])) {
+        if (!resultMap[key]) {
+          resultMap[key] = [...new Set(obj[key])];
+        } else {
+          resultMap[key] = [...new Set([...resultMap[key], ...obj[key]])];
+        }
+      } else {
+        resultMap[key] = obj[key];
+      }
+    }
+  });
+
+  for (const key in resultMap) {
+    resultArray.push({ [key]: resultMap[key] });
+  }
+
+  return resultArray;
+};
+
+const generatePopulateStatement = (relations) => {
+  const result = {};
+
+  relations.forEach((item) => {
+    if (typeof item === "object" && !Array.isArray(item)) {
+      const key = Object.keys(item)[0];
+      const innerObj = {};
+
+      item[key].forEach((innerItem) => {
+        innerObj[innerItem] = true;
+      });
+
+      result[key] = { populate: innerObj };
+    } else if (Array.isArray(item)) {
+      const key = Object.keys(item)[0];
+      const innerObj = {};
+
+      item[key].forEach((innerItem) => {
+        innerObj[innerItem] = true;
+      });
+
+      result[key] = { populate: innerObj };
+    } else {
+      result[item] = true;
+    }
+  });
+
+  return result;
+};
+
 const getUpdatableRelations = (model) => {
   const result = [];
-  const attributes = model.attributes;
+  const attributes = model?.attributes ?? [];
+
   for (const key in attributes) {
     if (
       attributes[key].type === "relation" &&
@@ -135,6 +195,14 @@ const getUpdatableRelations = (model) => {
       key !== "localizations"
     ) {
       result.push(key);
+    }
+
+    if (attributes[key].type === "dynamiczone") {
+      for (const comp of attributes[key].components) {
+        const model = strapi.getModel(comp);
+        const relations = getUpdatableRelations(model);
+        relations && result.push({ [key]: relations });
+      }
     }
   }
 
@@ -146,38 +214,102 @@ const manageRelations = async (newData, uid, oldVersionId, model) => {
     return newData;
   }
 
-  const updatableRelations = getUpdatableRelations(model);
+  const updatableRelations = reduceArray(getUpdatableRelations(model));
+
   const previousVersion = await strapi.db.query(uid).findOne({
     where: {
       id: oldVersionId,
     },
-    populate: updatableRelations,
+    populate: generatePopulateStatement(updatableRelations),
   });
-  const connects = {};
-  updatableRelations.forEach((rel) => {
-    const prevRel = previousVersion[rel];
-    if (prevRel) {
-      const newDataRel = newData[rel];
-      const newDataConnects = newDataRel.connect;
-      const newDataDisconnects = newDataRel.disconnect;
-      //Connect relations from previous version but only if they were not changed by user in the current version.
-      const idsHandledByEditor = [
-        ...newDataConnects.map((conn) => conn.id),
-        ...newDataDisconnects.map((conn) => conn.id),
-      ];
-      const mergedConnects = [...newDataConnects];
-      const prevRelIds = Array.isArray(prevRel)
-        ? prevRel.map((rel) => rel.id)
-        : [prevRel.id];
-      prevRelIds.forEach((pid) => {
-        if (!idsHandledByEditor.includes(pid)) {
-          mergedConnects.push(pid);
+
+  const mergeConnections = (newDataRel, prevRel) => {
+    const newDataConnects = newDataRel.connect;
+    const newDataDisconnects = newDataRel.disconnect;
+
+    //Connect relations from previous version but only if they were not changed by user in the current version.
+    const idsHandledByEditor = [
+      ...newDataConnects.map((conn) => conn.id),
+      ...newDataDisconnects.map((conn) => conn.id),
+    ];
+
+    const mergedConnects = [...newDataConnects];
+
+    const prevRelIds = Array.isArray(prevRel)
+      ? prevRel.map((rel) => rel.id)
+      : [prevRel.id];
+    prevRelIds.forEach((pid) => {
+      if (!idsHandledByEditor.includes(pid)) {
+        mergedConnects.push({ id: pid });
+      }
+    });
+
+    return mergedConnects;
+  };
+
+  const updateRelations = (updateableRels, previous, parent = null) => {
+    updateableRels.forEach((relation) => {
+      if (typeof relation === "string") {
+        if (previous) {
+          if (!_.isArray(previous)) {
+            const prevRel = previous[relation] ?? undefined;
+
+            if (prevRel) {
+              const newDataRel = parent
+                ? newData[parent][relation]
+                : newData[relation];
+
+              const mergedConnects = mergeConnections(newDataRel, prevRel);
+
+              if (!connects[parent]) {
+                connects[parent] = [
+                  {
+                    ...newData[parent],
+                    ..._.pickBy(previousVersion[parent]),
+                  },
+                ];
+              }
+              if (!parent) {
+                connects[relation] = { connect: mergedConnects };
+                return;
+              }
+              connects[parent][relation] = { connect: mergedConnects };
+            }
+            return;
+          }
+
+          previous.forEach((prev, i) => {
+            const prevRel = prev[relation] ?? undefined;
+
+            if (prevRel) {
+              const newDataRel = newData[parent][i][relation];
+              const mergedConnects = mergeConnections(newDataRel, prevRel);
+
+              if (!connects[parent]) {
+                connects[parent] = [
+                  {
+                    ...newData[parent][i],
+                    ..._.pickBy(previousVersion[parent][i]),
+                  },
+                ];
+              }
+              connects[parent][i][relation] = { connect: mergedConnects };
+            }
+          });
+        }
+
+        return;
+      }
+      Object.keys(relation).map((key) => {
+        if (Array.isArray(relation[key])) {
+          return updateRelations(relation[key], previous[key], key);
         }
       });
+    });
+  };
+  const connects = {};
+  updateRelations(updatableRelations, previousVersion);
 
-      connects[rel] = { connect: mergedConnects };
-    }
-  });
   return {
     ...newData,
     ...connects,
