@@ -12,6 +12,7 @@ const _ = require("lodash");
 const relationUpdateMiddleware = async (ctx, next) => {
   const { model, id } = ctx.request.params;
   const modelDef = strapi.getModel(model);
+
   if (
     !getService("content-types").isVersionedContentType(modelDef) ||
     modelDef.__schema__.kind === "singleType"
@@ -22,12 +23,14 @@ const relationUpdateMiddleware = async (ctx, next) => {
   const entry = await strapi.entityService.findOne(model, id, {
     populate: "*",
   });
+
   const allVersionIds = await strapi.db.query(model).findMany({
     select: ["id"],
     where: {
       vuid: entry.vuid,
     },
   });
+
   const allVersionIdsNumbers = allVersionIds.map((id) => id.id);
   if (allVersionIdsNumbers.length < 2) {
     // there are no multiple version, no need to update relations

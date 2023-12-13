@@ -97,4 +97,15 @@ const addStrapiVersioningMiddleware = (strapi) => {
       return next();
     }
   );
+
+  strapi.server.router.use(
+    "/content-manager/collection-types/:model/:id",
+    (ctx, next) => {
+      if (ctx.method === "PUT") {
+        return relationUpdateMiddleware(ctx, next);
+      }
+
+      return next();
+    }
+  );
 };
