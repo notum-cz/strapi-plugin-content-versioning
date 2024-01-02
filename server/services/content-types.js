@@ -1,6 +1,5 @@
 "use strict";
 
-const _ = require("lodash");
 const {
   pick,
   pipe,
@@ -9,8 +8,11 @@ const {
   isNil,
   cloneDeep,
   isArray,
+  get,
+  set,
+  forEach,
+  pickBy,
 } = require("lodash/fp");
-const get = require("lodash/get");
 const {
   isRelationalAttribute,
   getVisibleAttributes,
@@ -73,7 +75,7 @@ const removeIdsMut = (model, entry) => {
 
   removeId(entry);
 
-  _.forEach(model.attributes, (attr, attrName) => {
+  forEach(model.attributes, (attr, attrName) => {
     const value = entry[attrName];
     if (attr.type === "dynamiczone" && isArray(value)) {
       value.forEach((compo) => {
@@ -231,20 +233,12 @@ const manageRelations = async (newData, uid, oldVersionId, model) => {
 
   const updatableRelations = reduceArray(getUpdatableRelations(model));
 
-  console.log(
-    "updatableRelations",
-    updatableRelations,
-    updatableRelations[1].dz
-  );
-
   const previousVersion = await strapi.db.query(uid).findOne({
     where: {
       id: oldVersionId,
     },
     populate: generatePopulateStatement(updatableRelations),
   });
-
-  console.log("previousVersion", previousVersion, previousVersion.dz[0]);
 
   const mergeConnections = (newDataRel, prevRel) => {
     const newDataConnects = newDataRel.connect;
@@ -270,33 +264,61 @@ const manageRelations = async (newData, uid, oldVersionId, model) => {
     return mergedConnects;
   };
 
-  const updateRelations = (updateableRels, previous, parent = null) => {
-    updateableRels.forEach((relation) => {
+  // const updateRelation = (relation, previous, parent) => {
+
+  //       const prevRel = previous[relation] ?? undefined;
+  //       if (prevRel) {
+  //         const newDataRel = parent
+  //           ? newData[parent][relation]
+  //           : newData[relation];
+  //         const mergedConnects = mergeConnections(newDataRel, prevRel);
+
+  //         if (!connects[parent]) {
+  //           connects[parent] = [
+  //             {
+  //               ...newData[parent],
+  //               ..._.pickBy(previousVersion[parent]),
+  //             },
+  //           ];
+  //         }
+  //         if (!parent) {
+  //           connects[relation] = { connect: mergedConnects };
+  //           return;
+  //         }
+  //         connects[parent][relation] = { connect: mergedConnects };
+  //       }
+  //       return;
+  // }
+
+  const updateRelations = (updatableRels, parent) => {
+    const previous = get(previousVersion, parent, previousVersion);
+
+    updatableRels.forEach((relation) => {
       if (typeof relation === "string") {
         if (previous) {
-          if (!_.isArray(previous)) {
+          if (!isArray(previous)) {
             const prevRel = previous[relation] ?? undefined;
-
             if (prevRel) {
               const newDataRel = parent
-                ? newData[parent][relation]
+                ? get(newData, `${parent}.${relation}`, newData[relation])
                 : newData[relation];
-
               const mergedConnects = mergeConnections(newDataRel, prevRel);
 
-              if (!connects[parent]) {
-                connects[parent] = [
+              if (!get(connects, parent)) {
+                set(connects, parent, [
                   {
-                    ...newData[parent],
-                    ..._.pickBy(previousVersion[parent]),
+                    ...get(newData, parent),
+                    ..._.pickBy(previous),
                   },
-                ];
+                ]);
               }
               if (!parent) {
                 connects[relation] = { connect: mergedConnects };
                 return;
               }
-              connects[parent][relation] = { connect: mergedConnects };
+              set(connects, `${parent}.${relation}`, {
+                connect: mergedConnects,
+              });
             }
             return;
           }
@@ -305,34 +327,43 @@ const manageRelations = async (newData, uid, oldVersionId, model) => {
             const prevRel = prev[relation] ?? undefined;
 
             if (prevRel) {
-              const newDataRel = newData[parent][i][relation];
+              const newDataRel = get(
+                newData,
+                `${parent}.${i}.${relation}`,
+                newData[relation]
+              );
               const mergedConnects = mergeConnections(newDataRel, prevRel);
 
-              if (!connects[parent]) {
-                connects[parent] = [
+              if (!get(connects, parent)) {
+                set(connects, parent, [
                   {
-                    ...newData[parent][i],
-                    ..._.pickBy(previousVersion[parent][i]),
+                    ...get(newData, `${parent}[${i}]`),
+                    ...pickBy(previous[i]),
                   },
-                ];
+                ]);
               }
-              connects[parent][i][relation] = { connect: mergedConnects };
+              set(connects, `${parent}.${i}.${relation}`, {
+                connect: mergedConnects,
+              });
             }
           });
         }
 
         return;
       }
+
       Object.keys(relation).map((key) => {
         if (Array.isArray(relation[key])) {
-          return updateRelations(relation[key], previous[key], key);
+          return updateRelations(
+            relation[key],
+            `${parent ? parent + "." : ""}${key}`
+          );
         }
       });
     });
   };
   const connects = {};
   updateRelations(updatableRelations, previousVersion);
-
   return {
     ...newData,
     ...connects,

@@ -109,7 +109,7 @@ const decorator = (service) => ({
         },
       });
       data.vuid = relatedLocaleItem.vuid;
-    } else if(!data.vuid) {
+    } else if (!data.vuid) {
       data.vuid = uuid();
       data.versionNumber = 1;
       data.isVisibleInListView = true;
