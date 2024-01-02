@@ -109,7 +109,7 @@ const decorator = (service) => ({
         },
       });
       data.vuid = relatedLocaleItem.vuid;
-    } else if(!data.vuid) {
+    } else if (!data.vuid) {
       data.vuid = uuid();
       data.versionNumber = 1;
       data.isVisibleInListView = true;
@@ -290,7 +290,10 @@ const decorator = (service) => ({
     // Create Version
     const result = await service.create.call(this, uid, {
       ...opts,
-      data: newData,
+      data: {
+        ...newData,
+        publishedAt: null,
+      },
     });
     // Relink all versions from other locales if result is The latest(published)!
     if (result.isVisibleInListView && isLocalized) {
