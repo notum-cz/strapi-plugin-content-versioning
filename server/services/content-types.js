@@ -162,7 +162,17 @@ const generatePopulateStatement = (relations) => {
       const innerObj = {};
 
       item[key].forEach((innerItem) => {
-        innerObj[innerItem] = true;
+        if (typeof innerItem === "object") {
+          const key = Object.keys(innerItem)[0];
+          innerObj[key] = {
+            populate: {},
+          };
+          innerItem[key].forEach((element) => {
+            innerObj[key]["populate"][element] = true;
+          });
+        } else {
+          innerObj[innerItem] = true;
+        }
       });
 
       result[key] = { populate: innerObj };
@@ -204,6 +214,11 @@ const getUpdatableRelations = (model) => {
         relations && result.push({ [key]: relations });
       }
     }
+    if (attributes[key].type === "component") {
+      const model = strapi.getModel(attributes[key].component);
+      const relations = getUpdatableRelations(model);
+      relations && result.push({ [key]: relations });
+    }
   }
 
   return result;
@@ -216,12 +231,20 @@ const manageRelations = async (newData, uid, oldVersionId, model) => {
 
   const updatableRelations = reduceArray(getUpdatableRelations(model));
 
+  console.log(
+    "updatableRelations",
+    updatableRelations,
+    updatableRelations[1].dz
+  );
+
   const previousVersion = await strapi.db.query(uid).findOne({
     where: {
       id: oldVersionId,
     },
     populate: generatePopulateStatement(updatableRelations),
   });
+
+  console.log("previousVersion", previousVersion, previousVersion.dz[0]);
 
   const mergeConnections = (newDataRel, prevRel) => {
     const newDataConnects = newDataRel.connect;
