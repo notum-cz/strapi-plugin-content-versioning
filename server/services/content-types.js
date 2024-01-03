@@ -8,11 +8,10 @@ const {
   isNil,
   cloneDeep,
   isArray,
-  get,
-  set,
-  forEach,
-  pickBy,
 } = require("lodash/fp");
+
+const { get, set, forEach, pickBy } = require("lodash");
+
 const {
   isRelationalAttribute,
   getVisibleAttributes,
@@ -264,35 +263,17 @@ const manageRelations = async (newData, uid, oldVersionId, model) => {
     return mergedConnects;
   };
 
-  // const updateRelation = (relation, previous, parent) => {
-
-  //       const prevRel = previous[relation] ?? undefined;
-  //       if (prevRel) {
-  //         const newDataRel = parent
-  //           ? newData[parent][relation]
-  //           : newData[relation];
-  //         const mergedConnects = mergeConnections(newDataRel, prevRel);
-
-  //         if (!connects[parent]) {
-  //           connects[parent] = [
-  //             {
-  //               ...newData[parent],
-  //               ..._.pickBy(previousVersion[parent]),
-  //             },
-  //           ];
-  //         }
-  //         if (!parent) {
-  //           connects[relation] = { connect: mergedConnects };
-  //           return;
-  //         }
-  //         connects[parent][relation] = { connect: mergedConnects };
-  //       }
-  //       return;
-  // }
-
   const updateRelations = (updatableRels, parent) => {
+    console.log("prevV", previousVersion, get(previousVersion, "dz"));
     const previous = get(previousVersion, parent, previousVersion);
-
+    console.log(
+      "previous",
+      previous,
+      "parent",
+      parent,
+      "upd reles",
+      updatableRelations
+    );
     updatableRels.forEach((relation) => {
       if (typeof relation === "string") {
         if (previous) {
@@ -308,7 +289,7 @@ const manageRelations = async (newData, uid, oldVersionId, model) => {
                 set(connects, parent, [
                   {
                     ...get(newData, parent),
-                    ..._.pickBy(previous),
+                    ...pickBy(previous),
                   },
                 ]);
               }
@@ -363,7 +344,7 @@ const manageRelations = async (newData, uid, oldVersionId, model) => {
     });
   };
   const connects = {};
-  updateRelations(updatableRelations, previousVersion);
+  updateRelations(updatableRelations);
   return {
     ...newData,
     ...connects,
