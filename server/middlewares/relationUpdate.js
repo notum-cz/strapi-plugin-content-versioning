@@ -158,7 +158,6 @@ function generateUpdateData(result, attributes, id, allIds) {
       };
     }
   });
-  console.log(updateData);
   return updateData;
 }
 
