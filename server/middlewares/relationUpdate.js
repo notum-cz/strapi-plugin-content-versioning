@@ -143,7 +143,8 @@ function generateUpdateData(result, attributes, id, allIds) {
         .filter((resultId) => resultId !== id)
         .filter((resultId) => allIds.includes(resultId));
       updateData[attr.name] = {
-        disconnect: otherVersionsOfEntry,
+        disconnect:
+          attr.relationType === "manyToMany" ? [] : otherVersionsOfEntry,
         connect: otherVersionsOfEntry.length ? [id] : [],
       };
     } else if (resultAttribute && typeof resultAttribute === "object") {
