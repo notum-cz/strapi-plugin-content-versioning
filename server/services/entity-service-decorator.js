@@ -99,7 +99,7 @@ const decorator = (service) => ({
     if (!isVersionedContentType(model)) {
       return service.create.call(this, uid, opts);
     }
-    if (isLocalized && data.localizations.length) {
+    if (isLocalized && data.localizations?.length) {
       const relatedLocaleItem = await strapi.db.query(uid).findOne({
         where: {
           id: data.localizations[0],
