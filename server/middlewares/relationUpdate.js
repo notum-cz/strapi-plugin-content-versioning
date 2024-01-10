@@ -94,7 +94,8 @@ function findAndUpdateRelations(allVersionIdsNumbers, id, entry, modelDef) {
     }
 
     //update all content types to the latest published version
-    filteredResults.forEach(async (result) => {
+
+    for (const result of filteredResults) {
       await strapi.db.query(component.key).update({
         where: {
           id: result.id,
@@ -106,7 +107,7 @@ function findAndUpdateRelations(allVersionIdsNumbers, id, entry, modelDef) {
           allVersionIdsNumbers
         ),
       });
-    });
+    }
   };
 }
 
