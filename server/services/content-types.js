@@ -153,34 +153,35 @@ const reduceArray = (arrayOfObjects) => {
   return resultArray;
 };
 
-const generatePopulateStatement = (relations) => {
-  const result = {};
-
-  relations.forEach((item) => {
-    if (typeof item === "object" && !Array.isArray(item)) {
-      const key = Object.keys(item)[0];
-      const innerObj = {};
-
-      item[key].forEach((innerItem) => {
-        innerObj[innerItem] = true;
+const generatePopulateStatement = (updateableRelations) => {
+  const output = {};
+  if (_.isArray(updateableRelations)) {
+    updateableRelations.forEach((relation, i) => {
+      if (typeof relation === "string") _.set(output, relation, true);
+      if (typeof relation === "object")
+        Object.keys(relation).forEach((rel) => {
+          _.set(
+            output,
+            rel,
+            _.isEmpty(updateableRelations[i][rel])
+              ? true
+              : {
+                  populate: generatePopulateStatement(
+                    updateableRelations[i][rel]
+                  ),
+                }
+          );
+        });
+    });
+  } else if (typeof updateableRelations === "object") {
+    Object.keys(updateableRelations).forEach((relation) => {
+      _.set(output, relation, {
+        populate: generatePopulateStatement(updateableRelations[relation]),
       });
+    });
+  }
 
-      result[key] = { populate: innerObj };
-    } else if (Array.isArray(item)) {
-      const key = Object.keys(item)[0];
-      const innerObj = {};
-
-      item[key].forEach((innerItem) => {
-        innerObj[innerItem] = true;
-      });
-
-      result[key] = { populate: innerObj };
-    } else {
-      result[item] = true;
-    }
-  });
-
-  return result;
+  return output;
 };
 
 const getUpdatableRelations = (model) => {
