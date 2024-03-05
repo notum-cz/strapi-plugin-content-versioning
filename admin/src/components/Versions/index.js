@@ -174,7 +174,7 @@ const Versions = () => {
             </div>
           </div>
         )}
-        {!isCreatingEntry && (
+        {!isCreatingEntry && !!Object.keys(initialData || {}).length && (
           <div style={{ marginBottom: 20 }}>
             <Typography fontWeight="bold">
               {formatMessage({
