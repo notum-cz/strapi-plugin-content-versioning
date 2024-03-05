@@ -62,7 +62,7 @@ const Versions = () => {
       if (modifiedData.id !== urlId) {
         replace({
           search: location.search,
-          pathname: `/content-manager/collectionType/${slug}/${modifiedData.id}`,
+          pathname: `/content-manager/collection-types/${slug}/${modifiedData.id}`,
         });
       }
     }
@@ -114,7 +114,7 @@ const Versions = () => {
 
       push({
         search: location.search,
-        pathname: `/content-manager/collectionType/${slug}/${selectedVersion.id}`,
+        pathname: `/content-manager/collection-types/${slug}/${selectedVersion.id}`,
       });
     },
     [data, push, slug]
