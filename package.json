@@ -1,6 +1,6 @@
 {
   "name": "@notum-cz/strapi-plugin-content-versioning",
-  "version": "1.2.6",
+  "version": "1.2.10",
   "description": "This plugin enables content versioning",
   "keywords": [
     "strapi",
@@ -26,7 +26,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@strapi/utils": "^4.15.5",
+    "@strapi/utils": "^4.17.0",
     "lodash": "^4.17.21",
     "uuid": "^9.0.1"
   },

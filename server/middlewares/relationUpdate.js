@@ -97,7 +97,8 @@ function findAndUpdateRelations(allVersionIdsNumbers, id, entry, modelDef) {
     }
 
     //update all content types to the latest published version
-    filteredResults.forEach(async (result) => {
+
+    for (const result of filteredResults) {
       await strapi.db.query(component.key).update({
         where: {
           id: result.id,
@@ -109,7 +110,7 @@ function findAndUpdateRelations(allVersionIdsNumbers, id, entry, modelDef) {
           allVersionIdsNumbers
         ),
       });
-    });
+    }
   };
 }
 
@@ -145,7 +146,8 @@ function generateUpdateData(result, attributes, id, allIds) {
         .filter((resultId) => resultId !== id)
         .filter((resultId) => allIds.includes(resultId));
       updateData[attr.name] = {
-        disconnect: otherVersionsOfEntry,
+        disconnect:
+          attr.relationType === "manyToMany" ? [] : otherVersionsOfEntry,
         connect: otherVersionsOfEntry.length ? [id] : [],
       };
     } else if (resultAttribute && typeof resultAttribute === "object") {

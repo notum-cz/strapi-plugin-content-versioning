@@ -99,7 +99,7 @@ const decorator = (service) => ({
     if (!isVersionedContentType(model)) {
       return service.create.call(this, uid, opts);
     }
-    if (isLocalized && data.localizations.length) {
+    if (isLocalized && data.localizations?.length) {
       const relatedLocaleItem = await strapi.db.query(uid).findOne({
         where: {
           id: data.localizations[0],
@@ -109,7 +109,7 @@ const decorator = (service) => ({
         },
       });
       data.vuid = relatedLocaleItem.vuid;
-    } else if(!data.vuid) {
+    } else if (!data.vuid) {
       data.vuid = uuid();
       data.versionNumber = 1;
       data.isVisibleInListView = true;
@@ -290,7 +290,10 @@ const decorator = (service) => ({
     // Create Version
     const result = await service.create.call(this, uid, {
       ...opts,
-      data: newData,
+      data: {
+        ...newData,
+        publishedAt: null,
+      },
     });
     // Relink all versions from other locales if result is The latest(published)!
     if (result.isVisibleInListView && isLocalized) {
