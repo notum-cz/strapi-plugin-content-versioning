@@ -284,10 +284,8 @@ const decorator = (service) => ({
       // omit current locale
       data.localizations = Object.values(_.omit(latestByLocale, data.locale));
     }
-    console.log("gets here");
     // remove old ids
     const newData = await createNewVersion(uid, data, model);
-    console.log("gets here 2", newData);
     // Create Version
     const result = await service.create.call(this, uid, {
       ...opts,
@@ -296,7 +294,6 @@ const decorator = (service) => ({
         publishedAt: null,
       },
     });
-    console.log("gets here 3");
     // Relink all versions from other locales if result is The latest(published)!
     if (result.isVisibleInListView && isLocalized) {
       // !set the current as latest in locale
