@@ -15,6 +15,7 @@ import { Typography } from "@strapi/design-system/Typography";
 import {
   useCMEditViewDataManager,
   useFetchClient,
+  useNotification,
 } from "@strapi/helper-plugin";
 import { format, parseISO } from "date-fns";
 
@@ -24,6 +25,7 @@ const Versions = () => {
   const { formatMessage } = useIntl();
   const { push, replace } = useHistory();
   const location = useLocation();
+  const toggleNotification = useNotification();
 
   const {
     initialData,
@@ -124,7 +126,19 @@ const Versions = () => {
     put(
       `/content-versioning/${slug}/${initialData.id}/update-version`,
       modifiedData
-    );
+    )
+      .then(() => {
+        toggleNotification({
+          type: "succes",
+          message: "Content successfully updated",
+        });
+      })
+      .catch(() => {
+        toggleNotification({
+          type: "warning",
+          message: "An error occured while updating the content",
+        });
+      });
   };
 
   return (
