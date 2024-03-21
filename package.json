@@ -1,6 +1,6 @@
 {
   "name": "@notum-cz/strapi-plugin-content-versioning",
-  "version": "1.2.13",
+  "version": "1.3.0",
   "description": "This plugin enables content versioning",
   "keywords": [
     "strapi",
