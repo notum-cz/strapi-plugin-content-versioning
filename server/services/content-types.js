@@ -175,7 +175,7 @@ const manageRelations = async (newData, uid, oldVersionId, model) => {
         }
       });
 
-      connects[rel] = { connect: mergedConnects.map((id) => ({ id })) };
+      connects[rel] = { connect: mergedConnects.map(({ id }) => ({ id })) };
     }
   });
   return {
