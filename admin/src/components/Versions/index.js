@@ -132,11 +132,17 @@ const Versions = () => {
           type: "succes",
           message: "Content successfully updated",
         });
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 250);
       })
-      .catch(() => {
+      .catch((err) => {
         toggleNotification({
           type: "warning",
-          message: "An error occured while updating the content",
+          message:
+            err?.response?.data?.error?.message ||
+            "An error occured while updating the content",
         });
       });
   };
