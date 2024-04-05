@@ -2,10 +2,17 @@
 
 This plugin lets you flip back and forth between different versions of your content, just as they were when you first created them.
 
+## 🛑 This package has been deprecated
+
+With Strapi version 5 introducing support for draft content versions, the majority of features offered by this plugin repository will become available as core features. Furthermore, providing this functionality as a plugin has proven challenging due to the necessity of keeping pace with new Strapi versions, resulting in numerous issues when fine-tuning for specific versions of Strapi.
+
+Given these considerations, it no longer seems sensible to maintain and develop this plugin, and it is now in standby mode. We are looking forward to V5!
+
+A big thank you to everyone who has made this Strapi plugin a success. Led by [Notum](https://notum.cz/), it has received thousands of monthly downloads and has played a crucial role in simplifying the content versioning process for many projects.
+
 ## ⚠️✋ Read before installation
 
-⚠️ Might not work with the [Strapi publisher plugin](https://market.strapi.io/plugins/strapi-plugin-publisher)  
-⚠️ Might not work if `DATABASE_CLIENT` env variable is not set. More information [here](https://github.com/notum-cz/strapi-plugin-content-versioning/issues/113).    
+⚠️⚠️ Might not work if `DATABASE_CLIENT` env variable is not set. More information [here](https://github.com/notum-cz/strapi-plugin-content-versioning/issues/113).    
 ⚠️ Does not work well with GraphQL ([more information](https://github.com/notum-cz/strapi-plugin-content-versioning/issues/152))
 
 ## 🙉 What does the plugin do for you?
