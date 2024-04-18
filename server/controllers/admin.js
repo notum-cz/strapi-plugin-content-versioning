@@ -46,7 +46,6 @@ module.exports = {
     const { slug, id } = ctx.request.params;
     const { body: data } = ctx.request;
     const model = strapi.getModel(slug);
-
     const updatableKeys = Object.keys(model.attributes).filter(
       (key) =>
         ![
@@ -67,9 +66,9 @@ module.exports = {
 
     const updateData = pick(data, updatableKeys);
 
-    const updatedVersion = await strapi.db.query(slug).update({
-      where: { id },
-      data: updateData,
+    const updatedVersion = await strapi.entityService.update(slug, id, {
+      ...updateData,
+      doNotCreateVersion: true,
     });
     return updatedVersion;
   },

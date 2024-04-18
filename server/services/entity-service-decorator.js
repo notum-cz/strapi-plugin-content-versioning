@@ -132,6 +132,10 @@ const decorator = (service) => ({
     const isLocalized = isLocalizedContentType(model);
     const attrName = _.snakeCase(model.info.singularName);
     const collectionName = _.snakeCase(model.collectionName);
+
+    if (opts.doNotCreateVersion) {
+      return service.update.call(this, uid, entityId, { data: opts });
+    }
     const prevVersion = await strapi.db.query(uid).findOne({
       where: {
         id: entityId,
