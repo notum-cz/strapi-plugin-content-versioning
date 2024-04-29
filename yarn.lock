@@ -25,10 +25,10 @@
     escape-string-regexp "^2.0.0"
     lodash.deburr "^4.1.0"
 
-"@strapi/utils@^4.20.5":
-  version "4.20.5"
-  resolved "https://registry.yarnpkg.com/@strapi/utils/-/utils-4.20.5.tgz#41656a33025cb2e764398805b4b540375e57a492"
-  integrity sha512-7/VO9Sf2nxBa+nraZN+HHpJ2isoWbLsU1ECGU7kCgUM8j37F9JEgfvKaRRtYsjEKQGNOeMqn9yMy7dTfKT66fA==
+"@strapi/utils@^4.24.0":
+  version "4.24.0"
+  resolved "https://registry.yarnpkg.com/@strapi/utils/-/utils-4.24.0.tgz#7e1e6dca91ff4230d4a1208f33e457fbc7db1c64"
+  integrity sha512-9kOSyatGRDxpDZIJ3R5WaGzt4+z1uiddKbPCwM0oHTqPyxfsTCHGhy7y1N4R64KRKtN2fj+h+A76C6Xf5LZTyQ==
   dependencies:
     "@sindresorhus/slugify" "1.1.0"
     date-fns "2.30.0"
