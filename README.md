@@ -76,7 +76,8 @@ Are any of these features significant to you? Please show your support by giving
 
 ## ⛔️ Known limitations
 
-- ✋  Not working with UID and unique fields
+- ✋ Not working with UID and unique fields
+- ✋ Doesn't work under schemas other than public
 
 ## 🐛 Bugs
 
